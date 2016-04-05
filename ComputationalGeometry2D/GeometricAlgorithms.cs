@@ -12,6 +12,7 @@ namespace ComputationalGeometry2D
     {
         public ClosestPointsPairResult ClosestPairIterative(List<Point> points)
         {
+            int i;
             List<PointsPair> closestPairs = new List<PointsPair>();
             double minDist = Double.PositiveInfinity;
 
