@@ -19,7 +19,7 @@ namespace ComputationalGeometry2D
         List<ComputationalGeometry2D.Point> points = new List<ComputationalGeometry2D.Point>();
         System.Drawing.Point p1;
 
-        private Geometry geometry = new Geometry();
+        private GeometricAlgorithms geometry = new GeometricAlgorithms();
 
         private static readonly Random random = new Random();
         private static readonly object syncLock = new object();
@@ -145,7 +145,6 @@ namespace ComputationalGeometry2D
 
         private void minDistPair_btn_Click(object sender, EventArgs e)
         {
-            int i = 9;
             Stopwatch sw = new Stopwatch();
             List<ComputationalGeometry2D.Point> randomPoints = GetRandomPoints();
             sw.Start();

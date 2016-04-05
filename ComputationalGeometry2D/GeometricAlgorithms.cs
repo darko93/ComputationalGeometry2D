@@ -8,7 +8,7 @@ using C5;
 
 namespace ComputationalGeometry2D
 {
-    class Geometry
+    class GeometricAlgorithms
     {
         public ClosestPointsPairResult ClosestPairIterative(List<Point> points)
         {

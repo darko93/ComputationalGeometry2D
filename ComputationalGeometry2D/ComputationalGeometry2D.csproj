@@ -56,7 +56,7 @@
     <Compile Include="Form1.designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Geometry.cs" />
+    <Compile Include="GeometricAlgorithms.cs" />
     <Compile Include="LineSegment.cs" />
     <Compile Include="DoublesComparer.cs" />
     <Compile Include="ClosestPointsPairResult.cs" />
