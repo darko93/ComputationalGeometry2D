@@ -148,9 +148,9 @@ namespace ComputationalGeometry2D
             return new ClosestPointsPairResult(closestPairs, minDist);
         }
 
-        private delegate TPoint getNeighborPoint<TPoint>(TPoint point);
+        private delegate Point getNeighborPoint(Point point);
         
-        private void UpdateMinDist(Point current, Point boundPoint, List<PointsPair> minDistPair, ref double sqrdMinDist, getNeighborPoint<Point> neighborFunc)
+        private void UpdateMinDist(Point current, Point boundPoint, List<PointsPair> minDistPair, ref double sqrdMinDist, getNeighborPoint neighborFunc)
         {
             Point neighborPoint = neighborFunc(current);
             int i = 0;
@@ -169,18 +169,9 @@ namespace ComputationalGeometry2D
                     sqrdMinDist = sqrdDist;
                     minDistPair.Clear();
                     minDistPair.Add(new PointsPair(neighborPoint, current));
-                    //TPoint nextLeft;
-                    // zawsze fałszywe, bo używam TreeSetu
-                    /*
-                    while ((nextLeft = neighborFunc(sidePoint)).ContentEquals(sidePoint))
-                    {
-                        minDistPair.Add(new Tuple<TPoint, TPoint>(current, nextLeft));
-                        sidePoint = nextLeft;
-                    }
-                    */
                 }
                 neighborPoint = neighborFunc(neighborPoint);
-                i++; // zawsze dozwolone, bo miotła nie zawiera duplikatów
+                i++;
             }
         }
 
@@ -194,27 +185,6 @@ namespace ComputationalGeometry2D
                 candidateToDelete = firstActive;
             }
         }
-
-        /*
-        //to też może zwracać listę, kiedy np. dwie różne pary mają tą samą odległość
-        public Tuple<TPoint, TPoint> MinDistPairNoDuplicates<TPoint>(List<TPoint> points) where TPoint : Point
-        {
-            Tuple<TPoint, TPoint> tuple = new Tuple<TPoint, TPoint>(points[0], points[1]);
-            TPoint p1 = tuple.Item1;
-            return null;
-        }
-
-        public List<Tuple<TPoint, TPoint>> MinDistPairAllowDuplicates<TPoint>(List<TPoint> points) where TPoint : UniquePoint
-        {
-            return new List<Tuple<TPoint, TPoint>>() { Tuple.Create<TPoint, TPoint>(points[0], points[1]) };
-        }
-
-        public bool AnySegmentsIntersect<TPoint, TSegment>(TPoint p, TSegment s) where TPoint : Point where TSegment : LineSegment
-        {
-            bool q = p.LiesToTheLeftOf(s);
-            return false;
-        }
-        */
 
         public ClosestPointsPairResult ClosestPairBruteForce(List<Point> points)
         {
@@ -236,17 +206,15 @@ namespace ComputationalGeometry2D
                     Point p1 = points[i];
                     Point p2 = points[j];
                     sqrdDist = p1.SquaredDistanceFrom(p2);
-                    //if (!sqrdDist.IsAlmostEqualToZero())
-                    //{
-                        if (sqrdDist.IsAlmostEqualTo(sqrdMinDist))
-                            closestPairs.Add(new PointsPair(p1, p2));
-                        else if (sqrdDist < sqrdMinDist)
-                        {
-                            sqrdMinDist = sqrdDist;
-                            closestPairs.Clear();
-                            closestPairs.Add(new PointsPair(p1, p2));
-                        }
-                    //}
+
+                    if (sqrdDist.IsAlmostEqualTo(sqrdMinDist))
+                        closestPairs.Add(new PointsPair(p1, p2));
+                    else if (sqrdDist < sqrdMinDist)
+                    {
+                        sqrdMinDist = sqrdDist;
+                        closestPairs.Clear();
+                        closestPairs.Add(new PointsPair(p1, p2));
+                    }
                 }
             minDist = Math.Sqrt(sqrdMinDist);
             return new ClosestPointsPairResult(closestPairs, minDist);
@@ -262,9 +230,6 @@ namespace ComputationalGeometry2D
                 closestPairs.Add(new PointsPair(Point.SWInfinity, Point.NEInfinity));
                 return new ClosestPointsPairResult(closestPairs, minDist);
             }
-
-            //List<Point> sortedByX = points.OrderBy(p => p.X).ToList();
-            //List<Point> sortedByY = points.OrderBy(p => p.Y).ToList();
 
             List<Point> sortedByX = points.OrderBy(p => p, new PointsXYIDComparer()).ToList();
             List<Point> sortedByY = points.OrderBy(p => p, new PointsYXIDComparer()).ToList();
@@ -314,21 +279,31 @@ namespace ComputationalGeometry2D
                 result = leftResult;
             else result = rightResult;
 
-            List<Point> middleNeighborsSortedByY = sortedByX.Where(p => (p.X - middlePoint.X).IsLessThanOrAlmostEqualTo(result.MinDist)).ToList();
-            foreach (Point yPoint in middleNeighborsSortedByY)
+            List<Point> middleXNeighborsSortedByY = sortedByY.Where(p => Math.Abs(p.X - middlePoint.X).IsLessThanOrAlmostEqualTo(result.MinDist)).ToList();
+
+            int last = middleXNeighborsSortedByY.Count - 1;
+            for (int i = 0; i < last; i++)
             {
-                int count = middleNeighborsSortedByY.Count;
-                for (int i = 0; i < 7 && i < count; i++)
+                Point iNeighbor = middleXNeighborsSortedByY[i];
+                int lastSucc = i + 7;
+                if (lastSucc > last)
+                    lastSucc = last;
+                for (int j = i + 1; j <= lastSucc; j++)
                 {
-                    Point iNeighbor = middleNeighborsSortedByY[i]; 
-                    double dist = yPoint.DistanceFrom(iNeighbor);
+                    Point iNeighborJSucc = middleXNeighborsSortedByY[j];
+                    double dist = iNeighbor.DistanceFrom(iNeighborJSucc);
                     if (dist.IsAlmostEqualTo(result.MinDist))
-                        result.PointsPairs.Add(new PointsPair(yPoint, iNeighbor));
+                    {
+                        PointsPair pair = new PointsPair(iNeighbor, iNeighborJSucc);
+                        bool contains = result.PointsPairs.Contains(pair);
+                        if (!contains)
+                            result.PointsPairs.Add(pair);
+                    }
                     else if (dist < result.MinDist)
                     {
                         result.MinDist = dist;
                         result.PointsPairs.Clear();
-                        result.PointsPairs.Add(new PointsPair(yPoint, iNeighbor));
+                        result.PointsPairs.Add(new PointsPair(iNeighbor, iNeighborJSucc));
                     }
                 }
             }

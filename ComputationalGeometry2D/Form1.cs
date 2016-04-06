@@ -136,7 +136,7 @@ namespace ComputationalGeometry2D
         private List<ComputationalGeometry2D.Point> GetRandomPoints()
         {
             List<ComputationalGeometry2D.Point> randomPoints = new List<ComputationalGeometry2D.Point>();
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < 200000; i++)
             {
                 randomPoints.Add(new ComputationalGeometry2D.Point(RandomNumber(-3000, 3000), RandomNumber(-3000, 3000)));
             }
@@ -148,31 +148,31 @@ namespace ComputationalGeometry2D
             Stopwatch sw = new Stopwatch();
             List<ComputationalGeometry2D.Point> randomPoints = GetRandomPoints();
             sw.Start();
-            ClosestPointsPairResult minDistPair = geometry.ClosestPairRightDuplicates(points);
-            //MinDistPointsPairResult minDistPair = geometry.MinDistPairRightDuplicates(randomPoints);
+            //ClosestPointsPairResult minDistPair = geometry.ClosestPairRightDuplicates(points);
+            ClosestPointsPairResult minDistPair = geometry.ClosestPairRightDuplicates(randomPoints);
             long time1 = sw.ElapsedMilliseconds;
             sw.Restart();
-            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairNoDuplicates(points);
-            //MinDistPointsPairResult minDistPair2 = geometry.MinDistPairNoDuplicates(randomPoints);
+            //ClosestPointsPairResult minDistPair2 = geometry.ClosestPairNoDuplicates(points);
+            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairNoDuplicates(randomPoints);
             long time2 = sw.ElapsedMilliseconds;
             sw.Restart();
-            ClosestPointsPairResult minDistPair3 = geometry.ClosestPairBruteForce(points);
-            //MinDistPointsPairResult minDistPair3 = geometry.MinDistPairBruteForce(randomPoints);
-            long time3 = sw.ElapsedMilliseconds;
-            sw.Restart();
-            ClosestPointsPairResult minDistPair4 = geometry.ClosestPairIterative(points);
-            //MinDistPointsPairResult minDistPair4 = geometry.MinDistPairIterative(randomPoints);
+            ////ClosestPointsPairResult minDistPair3 = geometry.ClosestPairBruteForce(points);
+            //ClosestPointsPairResult minDistPair3 = geometry.ClosestPairBruteForce(randomPoints);
+            //long time3 = sw.ElapsedMilliseconds;
+            //sw.Restart();
+            //ClosestPointsPairResult minDistPair4 = geometry.ClosestPairIterative(points);
+            ClosestPointsPairResult minDistPair4 = geometry.ClosestPairIterative(randomPoints);
             long time4 = sw.ElapsedMilliseconds;
             sw.Restart();
-            ClosestPointsPairResult minDistPair5 = geometry.ClosestPairRecursive(points);
-            //MinDistPointsPairResult minDistPair5 = geometry.MinDistPairRecursive(randomPoints);
+            //ClosestPointsPairResult minDistPair5 = geometry.ClosestPairRecursive(points);
+            ClosestPointsPairResult minDistPair5 = geometry.ClosestPairRecursive(randomPoints);
             long time5 = sw.ElapsedMilliseconds;
             sw.Stop();
 
             //List<PointsPair> ppp = minDistPair5.PointsPair.Where(p => p.First.Equals(p.Second)).ToList();
 
-            MessageBox.Show($"{time1}\n{minDistPair.MinDist}\n{time2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}\n{time5}\n{minDistPair5.MinDist}");
-            //MessageBox.Show($"{time1}\n{minDistPair.MinDist}\n{time2}\n{minDistPair2.MinDist}\n{time4}\n{minDistPair4.MinDist}\n{time5}\n{minDistPair5.MinDist}");
+            //MessageBox.Show($"{time1}\n{minDistPair.MinDist}\n{time2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}\n{time5}\n{minDistPair5.MinDist}");
+            MessageBox.Show($"{time1}\n{minDistPair.MinDist}\n{time2}\n{minDistPair2.MinDist}\n{time4}\n{minDistPair4.MinDist}\n{time5}\n{minDistPair5.MinDist}");
             //MessageBox.Show($"{time1}\n{minDistPair.MinDist}\n{time2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}");
 
             foreach (PointsPair pair in minDistPair4.PointsPairs)

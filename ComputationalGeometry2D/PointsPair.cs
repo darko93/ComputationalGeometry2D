@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    class PointsPair
+    class PointsPair : IEquatable<PointsPair>
     {
         public Point First { get; private set; }
         public Point Second { get; private set; }
@@ -14,6 +14,13 @@ namespace ComputationalGeometry2D
         {
             First = first;
             Second = second;
-        } 
+        }
+
+        bool IEquatable<PointsPair>.Equals(PointsPair other) =>
+            (First.Equals(other.First) && Second.Equals(other.Second)) || (First.Equals(other.Second) && Second.Equals(other.First));
+        
+
+        public override string ToString() =>
+            $"[{First},{Second}]";
     }
 }

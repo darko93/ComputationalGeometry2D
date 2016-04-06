@@ -74,7 +74,7 @@ namespace ComputationalGeometry2D
         public bool CoordinatesEqual(Point other) =>
             X.IsAlmostEqualTo(other.X) && Y.IsAlmostEqualTo(other.Y);
 
-        public override string ToString() => $"({X},{Y})";
+        public override string ToString() => $"({X},{Y}) ID={ID}";
 
 
         
