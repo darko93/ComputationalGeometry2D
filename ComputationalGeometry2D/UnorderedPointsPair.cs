@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    class PointsPair : IEquatable<PointsPair>
+    class UnorderedPointsPair : IEquatable<UnorderedPointsPair>
     {
         public Point First { get; private set; }
         public Point Second { get; private set; }
-        public PointsPair(Point first, Point second)
+        public UnorderedPointsPair(Point first, Point second)
         {
             First = first;
             Second = second;
         }
 
-        bool IEquatable<PointsPair>.Equals(PointsPair other) =>
+        bool IEquatable<UnorderedPointsPair>.Equals(UnorderedPointsPair other) =>
             (First.Equals(other.First) && Second.Equals(other.Second)) || (First.Equals(other.Second) && Second.Equals(other.First));
         
 

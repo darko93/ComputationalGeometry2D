@@ -10,178 +10,102 @@ namespace ComputationalGeometry2D
 {
     class GeometricAlgorithms
     {
-        public ClosestPointsPairResult ClosestPairIterative(List<Point> points)
-        {
-            List<PointsPair> closestPairs = new List<PointsPair>();
-            double minDist = Double.PositiveInfinity;
-
-            if (points.Count <= 1)
-            {
-                closestPairs.Add(new PointsPair(Point.SWInfinity, Point.NEInfinity));
-                return new ClosestPointsPairResult(closestPairs, minDist);
-            }
-
-            IntervalHeap<Point> pointsQueue = new IntervalHeap<Point>(new PointsXYIDComparer());
-            points.ForEach(p => pointsQueue.Add(p)); // adds also duplicates, because of bag sementic
-            Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
-            Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
-            TreeSet<Point> pointsBroom = new TreeSet<Point>(new PointsYXIDComparer())
-            {
-                rightBound,
-                leftBound
-            };
-            Point current;
-            Point next = pointsQueue.FindMin(); // deleteMin
-            Point firstActive = next;
-            double sqrdMinDist = Double.PositiveInfinity;
-            bool successorExist;
-            do
-            {
-                current = next;
-
-                pointsQueue.DeleteMin(); // unnecessary
-                successorExist = pointsQueue.Count > 0;
-                if (successorExist)
-                    next = pointsQueue.FindMin(); // deleteMin 
-
-                UpdateMinDist(current, rightBound, closestPairs, ref sqrdMinDist, pointsBroom.Successor);
-                UpdateMinDist(current, leftBound, closestPairs, ref sqrdMinDist, pointsBroom.Predecessor);
-                UpdateActivePoints(current, ref firstActive, minDist, pointsBroom);
-                
-                pointsBroom.Add(current);
-            }
-            while (successorExist);
-
-            minDist = Math.Sqrt(sqrdMinDist);
-            return new ClosestPointsPairResult(closestPairs, minDist);
-        }
-
-        public ClosestPointsPairResult ClosestPairRightDuplicates(List<Point> points)
-        {
-            List<PointsPair> closestPairs = new List<PointsPair>();
-            double minDist = Double.PositiveInfinity;
-
-            if (points.Count <= 1)
-            {
-                closestPairs.Add(new PointsPair(Point.SWInfinity, Point.NEInfinity));
-                return new ClosestPointsPairResult(closestPairs, minDist);
-            }
-
-            IntervalHeap<Point> pointsQueue = new IntervalHeap<Point>(new PointsXYComparer());
-            points.ForEach(p => pointsQueue.Add(p)); // adds also duplicates, because of bag sementic
-            Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
-            Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
-            TreeSet<Point> pointsBroom = new TreeSet<Point>(new PointsYXComparer())
-            {
-                rightBound,
-                leftBound
-            };
-            Point current;
-            Point next = pointsQueue.FindMin();
-            Point firstActive = next;
-            double sqrdMinDist = Double.PositiveInfinity;
-            bool successorExist;
-            do
-            {
-                current = next;
-
-                pointsQueue.DeleteMin();
-                successorExist = pointsQueue.Count > 0;
-                if (successorExist)
-                    next = pointsQueue.FindMin();
-                
-                UpdateMinDist(current, rightBound, closestPairs, ref sqrdMinDist, pointsBroom.Successor);
-                UpdateMinDist(current, leftBound, closestPairs, ref sqrdMinDist, pointsBroom.Predecessor);
-                UpdateActivePoints(current, ref firstActive, minDist, pointsBroom);
-
-                pointsBroom.Add(current);
-            }
-            while (successorExist);
-
-            minDist = Math.Sqrt(sqrdMinDist);
-            return new ClosestPointsPairResult(closestPairs, minDist);
-        }
-
-        public ClosestPointsPairResult ClosestPairNoDuplicates(List<Point> points)
-        {
-            List<PointsPair> closestPairs = new List<PointsPair>();
-            double minDist = Double.PositiveInfinity;
-
-            if (points.Count <= 1)
-            {
-                closestPairs.Add(new PointsPair(Point.SWInfinity, Point.NEInfinity));
-                return new ClosestPointsPairResult(closestPairs, minDist);
-            }
-
-            TreeSet<Point> pointsQueue = new TreeSet<Point>(new PointsXYComparer());
-            points.ForEach(p => pointsQueue.Add(p)); // adds also duplicates, because of bag sementic
-            Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
-            Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
-            TreeSet<Point> pointsBroom = new TreeSet<Point>(new PointsYXComparer())
-            {
-                rightBound,
-                leftBound
-            };
-            Point current;
-            Point next = pointsQueue.FindMin();
-            Point firstActive = next;
-            double sqrdMinDist = Double.PositiveInfinity;
-            bool successorExist;
-            do
-            {
-                current = next;
-
-                pointsQueue.DeleteMin();
-                successorExist = pointsQueue.Count > 0;
-                if (successorExist)
-                    next = pointsQueue.FindMin();
-
-                UpdateMinDist(current, rightBound, closestPairs, ref sqrdMinDist, pointsBroom.Successor);
-                UpdateMinDist(current, leftBound, closestPairs, ref sqrdMinDist, pointsBroom.Predecessor);
-                UpdateActivePoints(current, ref firstActive, minDist, pointsBroom);
-
-                pointsBroom.Add(current);
-            }
-            while (successorExist);
-            
-            minDist = Math.Sqrt(sqrdMinDist);
-            return new ClosestPointsPairResult(closestPairs, minDist);
-        }
-
         private delegate Point getNeighborPoint(Point point);
+
+        public ClosestPointsPairResult ClosestPairIterative(List<Point> points, PointsCoordDuplicatesMode duplicatesMode)
+        {
+            if (duplicatesMode == PointsCoordDuplicatesMode.Allowed)
+                return ClosestPairIterative(points, new PointsXYIDComparer(), new PointsYXIDComparer());
+            else // if (duplicatesMode == PointsCoordDuplicatesMode.notAllowed)
+                return ClosestPairIterative(points, new PointsXYComparer(), new PointsYXComparer());
+        }
+
+        // This algorithm is slower than recursive version, although both are O(nlg(n)).
+        // Also this algorithm assumes, that for allowed coordinate-duplicates points list does not contain two or more same instances of Point,
+        // (because tree set will not accept duplicate instances)
+        // (tree bag will not help, because Successor() and Predecessor() will not find duplicates)
+        // so same instances of Point will not be considered as closest pair of distance 0.
+        // For duplicates instances use recursive algorithm.
+        private ClosestPointsPairResult ClosestPairIterative(List<Point> points, IComparer<Point> pointsXYComparer, IComparer<Point> pointsYXComparer)
+        {
+            List<UnorderedPointsPair> closestPairs = new List<UnorderedPointsPair>();
+            double minDist = Double.PositiveInfinity;
+
+            if (points.Count <= 1)
+            {
+                closestPairs.Add(new UnorderedPointsPair(Point.SWInfinity, Point.NEInfinity));
+                return new ClosestPointsPairResult(closestPairs, minDist);
+            }
+
+            TreeSet<Point> pointsQueue = new TreeSet<Point>(pointsXYComparer);
+            points.ForEach(p => pointsQueue.Add(p));
+            Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
+            Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
+            TreeSet<Point> pointsBroom = new TreeSet<Point>(pointsYXComparer)
+            {
+                rightBound,
+                leftBound
+            };;
+
+            Point firstActive = pointsQueue.DeleteMin();
+            Point current = firstActive;
+            pointsBroom.Add(current);
+            Point next;
+            while (pointsQueue.TrySuccessor(current, out next))
+            {
+                current = next;
+                if (minDist.IsAlmostEqualToZero()) // Possible when coordinate-duplicates allowed.
+                {
+                    Point previous = current;
+                    // Adding all pairs of distance 0, which consist of "current" and predecessors from "broom".
+                    while ((previous = pointsBroom.Predecessor(previous)).CoordinatesEqual(current))
+                        closestPairs.Add(new UnorderedPointsPair(previous, current));
+                }
+                else
+                {
+                    UpdateMinDist(current, rightBound, closestPairs, ref minDist, pointsBroom.Successor);
+                    UpdateMinDist(current, leftBound, closestPairs, ref minDist, pointsBroom.Predecessor);
+                }
+                UpdateActivePoints(current, ref firstActive, minDist, pointsQueue, pointsBroom);
+                pointsBroom.Add(current);
+            }
+            return new ClosestPointsPairResult(closestPairs, minDist);
+        }
         
-        private void UpdateMinDist(Point current, Point boundPoint, List<PointsPair> minDistPair, ref double sqrdMinDist, getNeighborPoint neighborFunc)
+        private void UpdateMinDist(Point current, Point boundPoint, List<UnorderedPointsPair> minDistPair, ref double minDist, getNeighborPoint neighborFunc)
         {
             Point neighborPoint = neighborFunc(current);
             int i = 0;
-            double sqrdDist;
-            while (!neighborPoint.CoordinatesEqual(boundPoint) && i < 4)
+            double dist;
+            while (i < 4 && !neighborPoint.CoordinatesEqual(boundPoint))
             {
-                sqrdDist = current.SquaredDistanceFrom(neighborPoint);
+                dist = current.DistanceFrom(neighborPoint);
                 
-                if (sqrdDist.IsAlmostEqualTo(sqrdMinDist))
+                if (dist.IsAlmostEqualTo(minDist))
                 {
-                    minDistPair.Add(new PointsPair(neighborPoint, current));
+                    minDistPair.Add(new UnorderedPointsPair(neighborPoint, current));
                 }
                 
-                else if (sqrdDist < sqrdMinDist)
+                else if (dist < minDist)
                 {
-                    sqrdMinDist = sqrdDist;
+                    minDist = dist;
                     minDistPair.Clear();
-                    minDistPair.Add(new PointsPair(neighborPoint, current));
+                    minDistPair.Add(new UnorderedPointsPair(neighborPoint, current));
                 }
                 neighborPoint = neighborFunc(neighborPoint);
                 i++;
             }
         }
 
-        private void UpdateActivePoints(Point current, ref Point firstActive, double minDist, TreeSet<Point> pointsBroom)
+        public int Counter { get; set; } = 0;
+        private void UpdateActivePoints(Point current, ref Point firstActive, double minDist, TreeSet<Point> pointsQueue, TreeSet<Point> pointsBroom)
         {
             Point candidateToDelete = firstActive;
-            while(current.X - candidateToDelete.X > minDist)
+            while ((current.X - candidateToDelete.X).IsGreaterThanAndNotAlmostEqualTo(minDist))
             {
-                firstActive = pointsBroom.Successor(candidateToDelete);
+                Counter++;
                 pointsBroom.Remove(candidateToDelete);
+                firstActive = pointsQueue.Successor(candidateToDelete);
                 candidateToDelete = firstActive;
             }
         }
@@ -189,12 +113,12 @@ namespace ComputationalGeometry2D
         public ClosestPointsPairResult ClosestPairBruteForce(List<Point> points)
         {
             double minDist = Double.PositiveInfinity;
-            List<PointsPair> closestPairs = new List<PointsPair>();
+            List<UnorderedPointsPair> closestPairs = new List<UnorderedPointsPair>();
             double pointsCount = points.Count;
 
             if (pointsCount <= 1)
             {
-                closestPairs.Add(new PointsPair(Point.SWInfinity, Point.NEInfinity));
+                closestPairs.Add(new UnorderedPointsPair(Point.SWInfinity, Point.NEInfinity));
                 return new ClosestPointsPairResult(closestPairs, minDist);
             }
 
@@ -208,12 +132,12 @@ namespace ComputationalGeometry2D
                     sqrdDist = p1.SquaredDistanceFrom(p2);
 
                     if (sqrdDist.IsAlmostEqualTo(sqrdMinDist))
-                        closestPairs.Add(new PointsPair(p1, p2));
+                        closestPairs.Add(new UnorderedPointsPair(p1, p2));
                     else if (sqrdDist < sqrdMinDist)
                     {
                         sqrdMinDist = sqrdDist;
                         closestPairs.Clear();
-                        closestPairs.Add(new PointsPair(p1, p2));
+                        closestPairs.Add(new UnorderedPointsPair(p1, p2));
                     }
                 }
             minDist = Math.Sqrt(sqrdMinDist);
@@ -223,13 +147,15 @@ namespace ComputationalGeometry2D
         public ClosestPointsPairResult ClosestPairRecursive(List<Point> points)
         {
             double minDist = Double.PositiveInfinity;
-            List<PointsPair> closestPairs = new List<PointsPair>();
+            List<UnorderedPointsPair> closestPairs = new List<UnorderedPointsPair>();
 
             if (points.Count <= 1)
             {
-                closestPairs.Add(new PointsPair(Point.SWInfinity, Point.NEInfinity));
+                closestPairs.Add(new UnorderedPointsPair(Point.SWInfinity, Point.NEInfinity));
                 return new ClosestPointsPairResult(closestPairs, minDist);
             }
+
+            // if no duplicates mode then delete duplicates from points list here
 
             List<Point> sortedByX = points.OrderBy(p => p, new PointsXYIDComparer()).ToList();
             List<Point> sortedByY = points.OrderBy(p => p, new PointsYXIDComparer()).ToList();
@@ -255,6 +181,11 @@ namespace ComputationalGeometry2D
                 if (pointsXYIDComparer.Compare(yPoint, middlePoint) < 0)
                     leftSortedByY.Add(yPoint);
                 else rightSortedByY.Add(yPoint);
+            }
+
+            if (leftSortedByY.Count != leftSortedByX.Count)
+            {
+                bool p = true;
             }
 
             List<Point> leftPoints = new List<Point>();
@@ -285,29 +216,43 @@ namespace ComputationalGeometry2D
             for (int i = 0; i < last; i++)
             {
                 Point iNeighbor = middleXNeighborsSortedByY[i];
-                int lastSucc = i + 7;
-                if (lastSucc > last)
-                    lastSucc = last;
-                for (int j = i + 1; j <= lastSucc; j++)
+                int j = i + 1;
+                if (result.MinDist.IsAlmostEqualToZero()) // Possible when coordinate-duplicates allowed.
                 {
-                    Point iNeighborJSucc = middleXNeighborsSortedByY[j];
-                    double dist = iNeighbor.DistanceFrom(iNeighborJSucc);
-                    if (dist.IsAlmostEqualTo(result.MinDist))
+                    Point iNeighborJSucc;
+                    while (j <= last && (iNeighborJSucc = middleXNeighborsSortedByY[j++]).CoordinatesEqual(iNeighbor))
                     {
-                        PointsPair pair = new PointsPair(iNeighbor, iNeighborJSucc);
+                        UnorderedPointsPair pair = new UnorderedPointsPair(iNeighbor, iNeighborJSucc);
                         bool contains = result.PointsPairs.Contains(pair);
-                        if (!contains)
+                        if (!contains) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
                             result.PointsPairs.Add(pair);
                     }
-                    else if (dist < result.MinDist)
+                }
+                else
+                {
+                    int lastSucc = i + 7;
+                    if (lastSucc > last)
+                        lastSucc = last;
+                    for ( ; j <= lastSucc; j++)
                     {
-                        result.MinDist = dist;
-                        result.PointsPairs.Clear();
-                        result.PointsPairs.Add(new PointsPair(iNeighbor, iNeighborJSucc));
+                        Point iNeighborJSucc = middleXNeighborsSortedByY[j];
+                        double dist = iNeighbor.DistanceFrom(iNeighborJSucc);
+                        if (dist.IsAlmostEqualTo(result.MinDist))
+                        {
+                            UnorderedPointsPair pair = new UnorderedPointsPair(iNeighbor, iNeighborJSucc);
+                            bool contains = result.PointsPairs.Contains(pair);
+                            if (!contains) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
+                                result.PointsPairs.Add(pair);
+                        }
+                        else if (dist < result.MinDist)
+                        {
+                            result.MinDist = dist;
+                            result.PointsPairs.Clear();
+                            result.PointsPairs.Add(new UnorderedPointsPair(iNeighbor, iNeighborJSucc));
+                        }
                     }
                 }
             }
-
             return result;
         }
 
