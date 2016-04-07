@@ -35,6 +35,7 @@ namespace ComputationalGeometry2D
         {
             InitializeComponent();
 
+            //MessageBox.Show(new PointsXYIDComparer().Compare(new Point(-2997847, -1598856), new Point(-2997845, -1829161)).ToString());
             //List<Tuple<SomePoint, SomePoint>> tupleList = new Geometry().MinDistPairAllowDuplicates<SomePoint>(list);
 
             bialy.Image = new Bitmap(600, 600);

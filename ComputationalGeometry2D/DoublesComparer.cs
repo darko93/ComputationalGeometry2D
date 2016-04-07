@@ -8,7 +8,7 @@ namespace ComputationalGeometry2D
 {
     sealed class DoublesComparer
     {
-        public const double AcceptableRelativeDifference = 1E-6;
+        public const double AcceptableRelativeDifference = 1E-9;
 
         public bool AlmostEqualTo(double val1, double val2, double acceptableRelativeDifference = AcceptableRelativeDifference)
         {
