@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    public enum PointsCoordDuplicatesMode : byte
+    public enum AngularSortDirection : byte
     {
-        ContainedInListAndAllowedInResult,
-        ContainedInListButNotAllowedInResult,
-        NotContainedInList
+        CounterClockwise,
+        Clockwise
     }
 }

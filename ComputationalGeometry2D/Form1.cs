@@ -35,8 +35,62 @@ namespace ComputationalGeometry2D
         {
             InitializeComponent();
 
-            //MessageBox.Show(new PointsXYIDComparer().Compare(new Point(-2997847, -1598856), new Point(-2997845, -1829161)).ToString());
-            //List<Tuple<SomePoint, SomePoint>> tupleList = new Geometry().MinDistPairAllowDuplicates<SomePoint>(list);
+            //AlgorithmsTester.Instance.HalfPlaneAngularSort();
+            //AlgorithmsTester.Instance.AllPlaneAngularSort();
+
+            //LineSegment s = new LineSegment
+            //    (
+            //        new Point(0.0, 0.0),
+            //        new Point(-1E-9, 1.0)
+            //    );
+            //Point testP = new Point(1.0000001, -1000000000);
+            //Point testP2 = new Point(0.124, -125000000);
+            //OrientationTestResult orientation = testP.OrientationTest(s);
+            //OrientationTestResult orientation2 = testP2.OrientationTest(s);
+
+            //LineSegment s2 = new LineSegment
+            //(
+            //    new Point(0.0, 0.0),
+            //    new Point(-1E-10, 1.0)
+            //);
+            //Point testP3 = new Point(0.125, -1250000000);
+            //Point testP4 = new Point(0.124, -1250000000);
+            //OrientationTestResult orientation3 = testP3.OrientationTest(s2);
+            //OrientationTestResult orientation4 = testP4.OrientationTest(s2);
+
+            //LineSegment s3 = new LineSegment
+            //(
+            //   new Point(0.0, 0.0),
+            //   new Point(200000.0, 0.0)
+            //);
+
+            //Point testP5 = new Point(-10000.0, 0.000000000000001); // collinear, ale mniejszy promień więc mniejszy?
+            //OrientationTestResult orientation5 = testP5.OrientationTest(s3);
+
+            //bool xx = true;
+
+            //Point p1 = new Point(0, 0);
+            //Point p2 = new Point(1, 0);
+            //Point p3 = new Point(3, 0);
+            //Point p4 = new Point(0.5, 0);
+            //Point p5 = new Point(2.5, 3);
+            //Point p6 = new Point(-1, 0);
+            //Point p7 = new Point(4, 0);
+            //Point p8 = new Point(-2, 0);
+            //Point p9 = new Point(5, 0);
+            //Point p10 = new Point(-3, 0);
+            //Point p11 = new Point(6, 0);
+            //Point p12 = new Point(-4, 0);
+            //Point p13 = new Point(7, 0);
+            //Point p14 = new Point(-5, 0);
+            //Point p15 = new Point(8, 0);
+            //Point p16 = new Point(-6, 0);
+            //Point p17 = new Point(9, 0);
+            //Point p18 = new Point(8, 0); // już taki jest
+            //List<Point> lp = new List<Point>() { p16, p14, p12, p12, p12, p12, p10, p8, p6, p1, p4, p2, p5, p3, p7, p9, p11, p13, p15, p17, p18 };
+            //ClosestPointsPairResult result = geometry.ClosestPairRecursive(lp, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
+            ////List<Point> lp2 = lp.Distinct(new PointsXYEqualityComparer()).ToList();
+            ////List<Point> lp3 = lp.Distinct().ToList();
 
             bialy.Image = new Bitmap(600, 600);
             trans.Image = new Bitmap(600, 600);
@@ -116,7 +170,7 @@ namespace ComputationalGeometry2D
         {
             LineSegment testSegment = segments[segments_lb.SelectedIndex];
             ComputationalGeometry2D.Point testPoint = points[points_lb.SelectedIndex];
-            OrientationTestResult result = testSegment.OrientationTest(testPoint);
+            OrientationTestResult result = testPoint.OrientationTest(testSegment);
             MessageBox.Show(result.ToString());
         }
 
@@ -137,7 +191,7 @@ namespace ComputationalGeometry2D
         private List<ComputationalGeometry2D.Point> GetRandomPoints()
         {
             List<ComputationalGeometry2D.Point> randomPoints = new List<ComputationalGeometry2D.Point>();
-            for (int i = 0; i < 500001; i++)
+            for (int i = 0; i < 1000000; i++)
             {
                 randomPoints.Add(new ComputationalGeometry2D.Point(RandomNumber(-3000000, 3000000), RandomNumber(-3000000, 3000000)));
             }
@@ -149,32 +203,36 @@ namespace ComputationalGeometry2D
             Stopwatch sw = new Stopwatch();
             List<ComputationalGeometry2D.Point> randomPoints = GetRandomPoints();
             sw.Start();
-                        
+
             ////ClosestPointsPairResult minDistPair1 = geometry.ClosestPairBruteForce(points);
             //ClosestPointsPairResult minDistPair1 = geometry.ClosestPairBruteForce(randomPoints);
             //long time1 = sw.ElapsedMilliseconds;
             //sw.Restart();
-            //ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(points);
-            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(randomPoints);
-            long time2 = sw.ElapsedMilliseconds;
+
+            //ClosestPointsPairResult minDistPair0 = geometry.ClosestPairRecursive(points, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
+            ClosestPointsPairResult minDistPair0 = geometry.ClosestPairRecursive(randomPoints, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
+            long time0 = sw.ElapsedMilliseconds;
             sw.Restart();
-            //ClosestPointsPairResult minDistPair3 = geometry.ClosestPairIterative(points, PointsCoordDuplicatesMode.Allowed);
-            ClosestPointsPairResult minDistPair3 = geometry.ClosestPairIterative(randomPoints, PointsCoordDuplicatesMode.Allowed);
+            //ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(points, PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult);
+            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(randomPoints, PointsCoordDuplicatesMode.NotContainedInList);
+            long time2 = sw.ElapsedMilliseconds;
+
+            sw.Restart();
+            //ClosestPointsPairResult minDistPair3 = geometry.ClosestPairSweepLine(points, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
+            ClosestPointsPairResult minDistPair3 = geometry.ClosestPairSweepLine(randomPoints, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
             long time3 = sw.ElapsedMilliseconds;
 
-            MessageBox.Show(geometry.Counter.ToString());
-            geometry.Counter = 0;
+            //MessageBox.Show(geometry.Counter.ToString());
+            //geometry.Counter = 0;
 
             sw.Restart();
-            //ClosestPointsPairResult minDistPair4 = geometry.ClosestPairIterative(points, PointsCoordDuplicatesMode.NotAllowed);
-            ClosestPointsPairResult minDistPair4 = geometry.ClosestPairIterative(randomPoints, PointsCoordDuplicatesMode.NotAllowed);
+            //ClosestPointsPairResult minDistPair4 = geometry.ClosestPairSweepLine(points, PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult);
+            ClosestPointsPairResult minDistPair4 = geometry.ClosestPairSweepLine(randomPoints, PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult);
             long time4 = sw.ElapsedMilliseconds;
-
-            MessageBox.Show(geometry.Counter.ToString());
             sw.Stop();
-
+            
             //MessageBox.Show($"{{time1}\n{minDistPair1.MinDist}\ntime2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}");
-            MessageBox.Show($"{time2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}");
+            //MessageBox.Show($"{time0}\n{minDistPair0.MinDist}\n{time2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}");
 
             foreach (UnorderedPointsPair pair in minDistPair2.PointsPairs)
             {
@@ -211,6 +269,15 @@ namespace ComputationalGeometry2D
             gt.DrawLine(Pens.Black, bialy.Location.X + 300, bialy.Location.Y + 0, bialy.Location.X + 300, bialy.Location.Y + 600);
             gt.DrawLine(Pens.Black, bialy.Location.X + 0, bialy.Location.Y + 300, bialy.Location.X + 600, bialy.Location.Y + 300);
             trans.Refresh();
+        }
+
+        private void convexHullGrahamScan_btn_Click(object sender, EventArgs e)
+        {
+            Stack<Point> convexHull = geometry.ConvexHullGrahamScan(points);
+            StringBuilder convexHullSb = new StringBuilder();
+            foreach (Point p in convexHull)
+                convexHullSb.AppendLine(p.ToString());
+            MessageBox.Show(convexHullSb.ToString());
         }
 
         private void membershipTest_btn_Click(object sender, EventArgs e)

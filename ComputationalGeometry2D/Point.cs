@@ -12,7 +12,7 @@ namespace ComputationalGeometry2D
         public double Y { get; set; }
 
         private static uint id = 0;
-        public uint ID { get; private set; }
+        internal uint ID { get; private set; }
 
         public Point(double x, double y)
         {
@@ -21,25 +21,29 @@ namespace ComputationalGeometry2D
             ID = id++;
         }
 
-        public static Point NEInfinity => new Point(Double.PositiveInfinity, Double.PositiveInfinity);
-
-        public static Point SEInfinity => new Point(Double.PositiveInfinity, Double.NegativeInfinity);
-
-        public static Point SWInfinity => new Point(Double.NegativeInfinity, Double.NegativeInfinity);
-
-        public static Point NWInfinity => new Point(Double.NegativeInfinity, Double.PositiveInfinity);
-
         public bool LiesToTheLeftOf(LineSegment segment) =>
-            segment.DirectionFrom(this).IsGreaterThanAndNotAlmostEqualTo(0.0);
+            segment.DirectionFrom(this).IsGreaterThanAndNotAlmostEqualToZero();
 
         public bool LiesToTheRightOf(LineSegment segment) =>
-            segment.DirectionFrom(this).IsLessThanAndNotAlmostEqualTo(0.0);
+            segment.DirectionFrom(this).IsLessThanAndNotAlmostEqualToZero();
 
         public bool LiesOn(LineSegment segment) =>
-            segment.RectBoundContains(this) && segment.DirectionFrom(this).IsAlmostEqualTo(0.0);
+            segment.RectBoundContains(this) && segment.DirectionFrom(this).IsAlmostEqualToZero();
 
         public double SquaredDistanceFrom(Point other) =>
             (other.X - X) * (other.X - X) + (other.Y - Y) * (other.Y - Y);
+
+        public OrientationTestResult OrientationTest(LineSegment segment)
+        {
+            double direction = segment.DirectionFrom(this);
+            if (direction.IsAlmostEqualToZero())
+            {
+                if (segment.RectBoundContains(this)) return OrientationTestResult.On;
+                else return OrientationTestResult.Collinear;
+            }
+            else if (direction > 0.0) return OrientationTestResult.Left;
+            else return OrientationTestResult.Right;
+        }
 
         public double DistanceFrom(Point other) =>
             Math.Sqrt(SquaredDistanceFrom(other));
@@ -49,9 +53,6 @@ namespace ComputationalGeometry2D
             X += x;
             Y += y;
         }
-
-        public void Translate(Point vector) =>
-            Translate(vector.X, vector.Y);
 
         public Point GetTranslated(double x, double y) =>
             new Point(X + x, Y + y);
@@ -76,8 +77,6 @@ namespace ComputationalGeometry2D
 
         public override string ToString() => $"({X},{Y}) ID={ID}";
 
-
-        
         public static explicit operator System.Drawing.Point(ComputationalGeometry2D.Point point) =>
             new System.Drawing.Point((int)point.X, (int)point.Y);
 

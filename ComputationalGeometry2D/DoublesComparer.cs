@@ -16,7 +16,7 @@ namespace ComputationalGeometry2D
 
             // Check if the numbers are really close - needed, when comparing numbers near zero
             double diff = Math.Abs(val1 - val2);
-            if (diff < acceptableRelativeDifference)
+            if (diff <= acceptableRelativeDifference)
                 return true;
 
             val1 = Math.Abs(val1);
@@ -24,16 +24,7 @@ namespace ComputationalGeometry2D
             double larger = (val2 > val1) ? val2 : val1;
 
             // Check if the numbers are relative close - needed, when numbers are really great
-            if (diff < larger * acceptableRelativeDifference)
-                return true;
-            return false;
-        }
-
-        public bool AlmostEqualToZero(double val, double acceptableRelativeDifference = AcceptableRelativeDifference)
-        {
-            //if (val == 0) return true;
-            
-            if (Math.Abs(val) < acceptableRelativeDifference)
+            if (diff <= larger * acceptableRelativeDifference)
                 return true;
             return false;
         }
@@ -49,5 +40,23 @@ namespace ComputationalGeometry2D
 
         public bool LessThanOrAlmostEqualTo(double val1, double val2, double acceptableRelativeDifference = AcceptableRelativeDifference) =>
             val1 <= val2 || AlmostEqualTo(val1, val2, acceptableRelativeDifference);
+
+
+        //Extra methods for comparing to zero for better performence, because it's often needed to compare to zero. 
+        public bool AlmostEqualToZero(double val, double acceptableRelativeDifference = AcceptableRelativeDifference) =>
+            //if (val == 0) return true;
+            Math.Abs(val) < acceptableRelativeDifference;
+
+        public bool GreaterThanAndNotAlmostEqualToZero(double val, double acceptableRelativeDifference = AcceptableRelativeDifference) =>
+            val > 0 && !AlmostEqualToZero(val, acceptableRelativeDifference);
+
+        public bool GreaterThanOrAlmostEqualToZero(double val, double acceptableRelativeDifference = AcceptableRelativeDifference) =>
+            val >= 0 || AlmostEqualToZero(val, acceptableRelativeDifference);
+
+        public bool LessThanAndNotAlmostEqualToZero(double val, double acceptableRelativeDifference = AcceptableRelativeDifference) =>
+            val < 0 && !AlmostEqualToZero(val);
+
+        public bool LessThanOrAlmostEqualToZero(double val, double acceptableRelativeDifference = AcceptableRelativeDifference) =>
+            val <= 0 || AlmostEqualToZero(val, acceptableRelativeDifference);
     }
 }
