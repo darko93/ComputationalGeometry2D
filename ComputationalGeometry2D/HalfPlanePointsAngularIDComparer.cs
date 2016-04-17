@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    class HalfPlanePointsAngularComparer : Comparer<Point>
+    class HalfPlanePointsAngularIDComparer : Comparer<Point>
     {
-        // Default sorting starts from positive X or positive Y axis in countercloskwise direction
+        // By default sorting starts from positive X or positive Y axis in countercloskwise direction.
 
         private LineSegment segment = new LineSegment();
         Point pole;
 
+        private int idOrderMultiplier = 1;
         private int directionMultiplier = 1;
         private int quadrantMultiplier = 1;
 
@@ -21,16 +22,26 @@ namespace ComputationalGeometry2D
         private comparePoints liesInEarlierQuadrant = null;
         private comparePoints liesInLaterQuadrant = null;
 
-        public HalfPlanePointsAngularComparer(Point pole, AngularSortStartLocation startLocation, AngularSortDirection direction)
+        public HalfPlanePointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularSortDirection direction, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
+        {
+            SetPole(pole);
+            SetSortStartLocation(startLocation);
+            SetSortDirection(direction);
+            SetIDOrder(pointsIDOrder);
+        }
+
+        public void SetPole(Point pole)
         {
             this.pole = pole;
             segment.Start = pole;
+        }
 
-            if (startLocation == AngularSortStartLocation.NegativeX || startLocation == AngularSortStartLocation.NegativeY)
+        public void SetSortStartLocation(AngularSortStartLocation startLocation)
+        {
+            if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.PositiveY)
+                quadrantMultiplier = 1;
+            else // if (startLocation == AngularSortStartLocation.NegativeX || startLocation == AngularSortStartLocation.NegativeY)
                 quadrantMultiplier = -1;
-
-            if (direction == AngularSortDirection.Clockwise)
-                directionMultiplier = -1;
 
             if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.NegativeX)
             {
@@ -42,6 +53,22 @@ namespace ComputationalGeometry2D
                 liesInEarlierQuadrant = LiesInEarlierNegativeXQuadrant;
                 liesInLaterQuadrant = LiesInLaterNegativeXQuadrant;
             }
+        }
+
+        public void SetSortDirection(AngularSortDirection direction)
+        {
+            if (direction == AngularSortDirection.CounterClockwise)
+                directionMultiplier = 1;
+            else // if (direction == AngularSortDirection.Clockwise)
+                directionMultiplier = -1;
+        }
+
+        public void SetIDOrder(PointsIDOrder pointsIDOrder)
+        {
+            if (pointsIDOrder == PointsIDOrder.Ascending)
+                idOrderMultiplier = 1;
+            else // if (pointsIDOrder == PointsIDOrder.Descending)
+                idOrderMultiplier = -1;
         }
 
         private bool LiesInEarlierPositiveYQuadrant(Point p1, Point p2) =>
@@ -67,17 +94,17 @@ namespace ComputationalGeometry2D
             else
             {
                 segment.End = p1;
-                OrientationTestResult orientation = p2.OrientationTest(segment);
-                if (orientation == OrientationTestResult.Right)
+                OrientationTestResult p2Orientation = p2.OrientationTest(segment);
+                if (p2Orientation == OrientationTestResult.Right)
                     result = 1;
-                else if (orientation == OrientationTestResult.Left)
+                else if (p2Orientation == OrientationTestResult.Left)
                     result = -1;
                 else
                 {
                     double p1SqrdRadious = pole.SquaredDistanceFrom(p1);
                     double p2SqrdRadious = pole.SquaredDistanceFrom(p2);
                     if (p1SqrdRadious.IsAlmostEqualTo(p2SqrdRadious))
-                        result = 0;
+                        return p1.ID.CompareTo(p2.ID) * idOrderMultiplier;
                     else result = p1SqrdRadious.CompareTo(p2SqrdRadious);
                 }
             }

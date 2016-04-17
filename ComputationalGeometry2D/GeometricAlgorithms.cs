@@ -23,25 +23,17 @@ namespace ComputationalGeometry2D
                     new Point(Double.PositiveInfinity, Double.PositiveInfinity))
             }, Double.PositiveInfinity);
 
-        public ClosestPointsPairResult ClosestPairSweepLine(List<Point> points, PointsCoordDuplicatesMode coordDuplicatesMode)
-        {
-            if (coordDuplicatesMode == PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult)
-                return ClosestPairSweepLine(points, new PointsXYIDComparer(), new PointsYXIDComparer());
-            else // if (coordDuplicatesMode == PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult || coordDuplicatesMode == PointsCoordDuplicatesMode.NotContainedInList)
-                return ClosestPairSweepLine(points, new PointsXYComparer(), new PointsYXComparer());
-        }
-
         // For large input (probably > 10000) this algorithm is faster than recursive version, although both are O(lg(n)).
         // Note: The same instances of Point will not be considered as closest pair of distance 0.
         // (because tree set will not accept duplicate instances)
         // (tree bag will not help, because Successor() and Predecessor() will not find duplicates)
         // For points of the same coordinates use different instances.
-        private ClosestPointsPairResult ClosestPairSweepLine(List<Point> points, IComparer<Point> pointsXYComparer, IComparer<Point> pointsYXComparer)
+        public ClosestPointsPairResult ClosestPairSweepLine(List<Point> points)
         {
             List<UnorderedPointsPair> closestPairs = new List<UnorderedPointsPair>();
             double minDist = Double.PositiveInfinity;
 
-            TreeSet<Point> eventQueue = new TreeSet<Point>(pointsXYComparer);
+            TreeSet<Point> eventQueue = new TreeSet<Point>(new PointsXYIDComparer(PointsIDOrder.Ascending));
             points.ForEach(p => eventQueue.Add(p));
 
             if (eventQueue.Count <= 1)
@@ -49,7 +41,7 @@ namespace ComputationalGeometry2D
 
             Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
             Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
-            TreeSet<Point> statusStructure = new TreeSet<Point>(pointsYXComparer)
+            TreeSet<Point> statusStructure = new TreeSet<Point>(new PointsYXIDComparer(PointsIDOrder.Ascending))
             {
                 rightBound,
                 leftBound
@@ -58,7 +50,7 @@ namespace ComputationalGeometry2D
             Point firstActive = eventQueue.FindMin();
             foreach(Point current in eventQueue) // Iterate over succeeding points.
             {
-                if (minDist.IsAlmostEqualToZero()) // Possible when coordinate-duplicates allowed.
+                if (minDist.IsAlmostEqualToZero())
                 {
                     Point previous = current;
                     // Adding all pairs of distance 0, which consist of "current" and predecessors from "broom".
@@ -103,7 +95,7 @@ namespace ComputationalGeometry2D
                 firstActive = eventQueue.Successor(firstActive);
             }
         }
-        public int Counter = 0;
+
         public ClosestPointsPairResult ClosestPairBruteForce(List<Point> points)
         {
             double minDist = Double.PositiveInfinity;
@@ -136,23 +128,22 @@ namespace ComputationalGeometry2D
         }
 
         // For large input (probably > 10000) this algorithm is slower than sweep-line version, although both are O(nlg(n)).
-        // Note: It's recommended to not pass the same instances of "Point" within points list, when coordinate-duplicates in the result are allowed,
+        // Note: It's recommended to not pass duplicates instances of "Point" within points list,
         // because method may produce incorrect result (not enough 0-dist pairs) or throw an exception (if multiple same instances of Point lies on the middle (probably more than 2)). 
         // If the same instances are contained in the list, specify it in "sameInstancesContainedInList" - they should be removed. For points of the same coordinates use different instances.
-        public ClosestPointsPairResult ClosestPairRecursive(List<Point> points, PointsCoordDuplicatesMode resultCoordDuplicatesMode, bool sameInstancesContainedInList = false)
+        public ClosestPointsPairResult ClosestPairRecursive(List<Point> points, bool sameInstancesContainedInList = false)
         {
             if (points.Count <= 1)
                 return NoClosestPair;
-
-            if (resultCoordDuplicatesMode == PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult)
-                points = points.Distinct(new PointsXYEqualityComparer()).ToList(); // Remove coordinate and reference equal points.
+            
             else if (sameInstancesContainedInList)
                 points = points.Distinct().ToList(); // Remove referenece equal points.
 
-            List<Point> sortedByX = points.OrderBy(p => p, new PointsXYIDComparer()).ToList();
-            List<Point> sortedByY = points.OrderBy(p => p, new PointsYXIDComparer()).ToList();
+            PointsXYIDComparer pointsXYIDComparer = new PointsXYIDComparer(PointsIDOrder.Ascending);
+            List<Point> sortedByX = points.OrderBy(p => p, pointsXYIDComparer).ToList();
+            List<Point> sortedByY = points.OrderBy(p => p, new PointsYXIDComparer(PointsIDOrder.Ascending)).ToList();
 
-            return ClosestPairRecursive(sortedByX, sortedByY, new PointsXYIDComparer());
+            return ClosestPairRecursive(sortedByX, sortedByY, pointsXYIDComparer);
         }
 
         public ClosestPointsPairResult ClosestPairRecursive(List<Point> sortedByX, List<Point> sortedByY, PointsXYIDComparer pointsXYIDComparer)
@@ -168,7 +159,7 @@ namespace ComputationalGeometry2D
             Point middlePoint = sortedByX[middle];
             List<Point> leftSortedByY = new List<Point>();
             List<Point> rightSortedByY = new List<Point>();
-            foreach(Point yPoint in sortedByY)
+            foreach (Point yPoint in sortedByY)
             {
                 if (pointsXYIDComparer.Compare(yPoint, middlePoint) < 0)
                     leftSortedByY.Add(yPoint);
@@ -195,14 +186,13 @@ namespace ComputationalGeometry2D
             {
                 Point iNeighbor = middleXNeighborsSortedByY[i];
                 int j = i + 1;
-                if (result.MinDist.IsAlmostEqualToZero()) // Possible when coordinate-duplicates allowed.
+                if (result.MinDist.IsAlmostEqualToZero())
                 {
                     Point iNeighborJSucc;
                     while (j <= last && (iNeighborJSucc = middleXNeighborsSortedByY[j++]).CoordinatesEqual(iNeighbor))
                     {
                         UnorderedPointsPair pair = new UnorderedPointsPair(iNeighbor, iNeighborJSucc);
-                        bool contains = result.PointsPairs.Contains(pair);
-                        if (!contains) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
+                        if (!result.PointsPairs.Contains(pair)) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
                             result.PointsPairs.Add(pair);
                     }
                 }
@@ -211,15 +201,14 @@ namespace ComputationalGeometry2D
                     int lastSucc = i + 7;
                     if (lastSucc > last)
                         lastSucc = last;
-                    for ( ; j <= lastSucc; j++)
+                    for (; j <= lastSucc; j++)
                     {
                         Point iNeighborJSucc = middleXNeighborsSortedByY[j];
                         double dist = iNeighbor.DistanceFrom(iNeighborJSucc);
                         if (dist.IsAlmostEqualTo(result.MinDist))
                         {
                             UnorderedPointsPair pair = new UnorderedPointsPair(iNeighbor, iNeighborJSucc);
-                            bool contains = result.PointsPairs.Contains(pair);
-                            if (!contains) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
+                            if (!result.PointsPairs.Contains(pair)) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
                                 result.PointsPairs.Add(pair);
                         }
                         else if (dist < result.MinDist)
@@ -234,18 +223,8 @@ namespace ComputationalGeometry2D
             return result;
         }
 
-        private List<Point> PolarSort(List<Point> points, Point pole)
-        {
-            TreeSet<Point> sortedByPolarCoord = new TreeSet<Point>(new PointsPolarCoordIDComparer(pole));
-            points.ForEach(p => sortedByPolarCoord.Add(p));
-            points.Clear();
-            while (sortedByPolarCoord.Count > 0)
-                points.Add(sortedByPolarCoord.DeleteMin());
-            return points;
-        }
-
         public List<Point> HalfPlaneAngularSort(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation) =>
-            points.OrderBy(p => p, new HalfPlanePointsAngularComparer(pole, startLocation, direction)).ToList();
+            points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, direction)).ToList();
 
         public List<Point> AllPlaneAngularSort(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation)
         {
@@ -263,23 +242,23 @@ namespace ComputationalGeometry2D
 
             if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.NegativeX)
             {
-                halfPlane1Points = points.Where(p => p.Y.IsGreaterThanOrAlmostEqualToZero()).ToList();
-                halfPlane2Points = points.Where(p => p.Y.IsLessThanAndNotAlmostEqualToZero()).ToList();
+                halfPlane1Points = points.Where(p => p.Y.IsGreaterThanOrAlmostEqualTo(pole.Y)).ToList();
+                halfPlane2Points = points.Where(p => p.Y.IsLessThanAndNotAlmostEqualTo(pole.Y)).ToList();
             }
             else //if (startLocation == PolarSortStartLocation.PositiveY || startLocation == PolarSortStartLocation.NegativeY)
             {
-                halfPlane1Points = points.Where(p => p.X.IsGreaterThanOrAlmostEqualToZero()).ToList();
-                halfPlane2Points = points.Where(p => p.X.IsLessThanAndNotAlmostEqualToZero()).ToList();
+                halfPlane1Points = points.Where(p => p.X.IsGreaterThanOrAlmostEqualTo(pole.X)).ToList();
+                halfPlane2Points = points.Where(p => p.X.IsLessThanAndNotAlmostEqualTo(pole.X)).ToList();
             }
-            halfPlane1Points = halfPlane1Points.OrderBy(p => p, new HalfPlanePointsAngularComparer(pole, startLocation, direction)).ToList();
-            halfPlane2Points = halfPlane2Points.OrderBy(p => p, new HalfPlanePointsAngularComparer(pole, secondHalfPlaneStartLocation, direction)).ToList();
+            halfPlane1Points = halfPlane1Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, direction)).ToList();
+            halfPlane2Points = halfPlane2Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, secondHalfPlaneStartLocation, direction)).ToList();
             halfPlane1Points.AddRange(halfPlane2Points);
             return halfPlane1Points;
         }
 
         public Stack<Point> ConvexHullGrahamScan(List<Point> points)
         {
-            Point minYPoint = points.MinBy(p => p, new PointsYXComparer());
+            Point minYPoint = points.MinBy(p => p, new PointsYXIDComparer(PointsIDOrder.Ascending));
             List<Point> sortedPoints = HalfPlaneAngularSort(points, minYPoint, AngularSortDirection.CounterClockwise, AngularSortStartLocation.PositiveX);
             Stack<Point> stack = new Stack<Point>();
             stack.Push(minYPoint);
@@ -303,6 +282,43 @@ namespace ComputationalGeometry2D
                 stack.Push(top); // Top was redundantly popped.
                 stack.Push(iPoint);
             }
+            return stack;
+        }
+
+        public Stack<Point> ConvexHullJarvis(List<Point> points)
+        {
+            Stack<Point> stack = new Stack<Point>();
+
+            PointsYXIDComparer pointsYXIDComparer = new PointsYXIDComparer(PointsIDOrder.Ascending);
+
+            Point minYPoint = points.MinBy(p => p, pointsYXIDComparer);
+            Point maxYPoint = points.MaxBy(p => p, pointsYXIDComparer);
+            Point current = minYPoint;
+            stack.Push(current);
+
+            HalfPlanePointsAngularIDComparer halfPlanePointsAngularIDComparer = 
+              new HalfPlanePointsAngularIDComparer(minYPoint, AngularSortStartLocation.PositiveX, AngularSortDirection.CounterClockwise, PointsIDOrder.Ascending);
+
+            while (!current.Equals(maxYPoint))
+            {
+                halfPlanePointsAngularIDComparer.SetPole(current);
+                current = points
+                    .Where(p => pointsYXIDComparer.Compare(p, current) > 0) // redundant??
+                    .MinBy(p => p, halfPlanePointsAngularIDComparer);
+                stack.Push(current);
+            }
+            pointsYXIDComparer.SetIDOrder(PointsIDOrder.Descending);
+            halfPlanePointsAngularIDComparer.SetSortStartLocation(AngularSortStartLocation.NegativeX);
+            while (!current.Equals(minYPoint))
+            {
+                halfPlanePointsAngularIDComparer.SetPole(current);
+                current = points
+                    .Where(p => pointsYXIDComparer.Compare(p, current) < 0) // redundant??
+                    .MinBy(p => p, halfPlanePointsAngularIDComparer);
+                stack.Push(current);
+            }
+            stack.Pop();
+
             return stack;
         }
     }

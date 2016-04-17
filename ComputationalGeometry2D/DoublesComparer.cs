@@ -14,7 +14,7 @@ namespace ComputationalGeometry2D
         {
             if (val1 == val2) return true;
 
-            // Check if the numbers are really close - needed, when comparing numbers near zero
+            // Check if the numbers are really close - needed, when comparing numbers near zero.
             double diff = Math.Abs(val1 - val2);
             if (diff <= acceptableRelativeDifference)
                 return true;
@@ -23,8 +23,9 @@ namespace ComputationalGeometry2D
             val2 = Math.Abs(val2);
             double larger = (val2 > val1) ? val2 : val1;
 
-            // Check if the numbers are relative close - needed, when numbers are really great
-            if (diff <= larger * acceptableRelativeDifference)
+            // Check if the numbers are relative close - needed, when numbers are really great.
+            // (Cannot be equal to, because it will return true for infinity and finite number.)
+            if (diff < larger * acceptableRelativeDifference)
                 return true;
             return false;
         }
@@ -42,7 +43,7 @@ namespace ComputationalGeometry2D
             val1 <= val2 || AlmostEqualTo(val1, val2, acceptableRelativeDifference);
 
 
-        //Extra methods for comparing to zero for better performence, because it's often needed to compare to zero. 
+        //Extra methods for comparing to zero for better performence. 
         public bool AlmostEqualToZero(double val, double acceptableRelativeDifference = AcceptableRelativeDifference) =>
             //if (val == 0) return true;
             Math.Abs(val) < acceptableRelativeDifference;

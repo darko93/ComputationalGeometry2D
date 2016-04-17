@@ -37,6 +37,8 @@ namespace ComputationalGeometry2D
 
             //AlgorithmsTester.Instance.HalfPlaneAngularSort();
             //AlgorithmsTester.Instance.AllPlaneAngularSort();
+            //AlgorithmsTester.Instance.ClosestPairSweepLineAndRecursiveTest(200);
+            AlgorithmsTester.Instance.ConvexHullGrahamScanAndJarvisTest();
 
             //LineSegment s = new LineSegment
             //    (
@@ -209,32 +211,23 @@ namespace ComputationalGeometry2D
             //long time1 = sw.ElapsedMilliseconds;
             //sw.Restart();
 
-            //ClosestPointsPairResult minDistPair0 = geometry.ClosestPairRecursive(points, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
-            ClosestPointsPairResult minDistPair0 = geometry.ClosestPairRecursive(randomPoints, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
+            //ClosestPointsPairResult minDistPair0 = geometry.ClosestPairRecursive(points);
+            ClosestPointsPairResult minDistPair0 = geometry.ClosestPairRecursive(randomPoints);
             long time0 = sw.ElapsedMilliseconds;
             sw.Restart();
-            //ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(points, PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult);
-            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(randomPoints, PointsCoordDuplicatesMode.NotContainedInList);
-            long time2 = sw.ElapsedMilliseconds;
 
-            sw.Restart();
-            //ClosestPointsPairResult minDistPair3 = geometry.ClosestPairSweepLine(points, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
-            ClosestPointsPairResult minDistPair3 = geometry.ClosestPairSweepLine(randomPoints, PointsCoordDuplicatesMode.ContainedInListAndAllowedInResult);
+            //ClosestPointsPairResult minDistPair3 = geometry.ClosestPairSweepLine(points);
+            ClosestPointsPairResult minDistPair3 = geometry.ClosestPairSweepLine(randomPoints);
             long time3 = sw.ElapsedMilliseconds;
+            sw.Reset();
 
             //MessageBox.Show(geometry.Counter.ToString());
             //geometry.Counter = 0;
-
-            sw.Restart();
-            //ClosestPointsPairResult minDistPair4 = geometry.ClosestPairSweepLine(points, PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult);
-            ClosestPointsPairResult minDistPair4 = geometry.ClosestPairSweepLine(randomPoints, PointsCoordDuplicatesMode.ContainedInListButNotAllowedInResult);
-            long time4 = sw.ElapsedMilliseconds;
-            sw.Stop();
             
             //MessageBox.Show($"{{time1}\n{minDistPair1.MinDist}\ntime2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}");
             //MessageBox.Show($"{time0}\n{minDistPair0.MinDist}\n{time2}\n{minDistPair2.MinDist}\n{time3}\n{minDistPair3.MinDist}\n{time4}\n{minDistPair4.MinDist}");
 
-            foreach (UnorderedPointsPair pair in minDistPair2.PointsPairs)
+            foreach (UnorderedPointsPair pair in minDistPair0.PointsPairs)
             {
                 ComputationalGeometry2D.Point p1 = pair.First;
                 p1 = p1.GetReflectedAboutTheXAxis();
@@ -274,6 +267,15 @@ namespace ComputationalGeometry2D
         private void convexHullGrahamScan_btn_Click(object sender, EventArgs e)
         {
             Stack<Point> convexHull = geometry.ConvexHullGrahamScan(points);
+            StringBuilder convexHullSb = new StringBuilder();
+            foreach (Point p in convexHull)
+                convexHullSb.AppendLine(p.ToString());
+            MessageBox.Show(convexHullSb.ToString());
+        }
+
+        private void convexHullJarvis_btn_Click(object sender, EventArgs e)
+        {
+            Stack<Point> convexHull = geometry.ConvexHullJarvis(points);
             StringBuilder convexHullSb = new StringBuilder();
             foreach (Point p in convexHull)
                 convexHullSb.AppendLine(p.ToString());

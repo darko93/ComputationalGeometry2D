@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ComputationalGeometry2D
 {
@@ -12,6 +13,40 @@ namespace ComputationalGeometry2D
         public static AlgorithmsTester Instance => instance;
 
         private GeometricAlgorithms geometry = new GeometricAlgorithms();
+        private Stopwatch stopWatch = new Stopwatch();
+
+        private static readonly Random random = new Random();
+        private static readonly object syncLock = new object();
+        private static double RandomDoubleNumber(double bound)
+        {
+            lock (syncLock)
+            { // synchronize
+                return (random.NextDouble() * 2 - 1) * bound;
+            }
+        }
+        private static int RandomIntNumber(int min, int max)
+        {
+            lock (syncLock)
+            { // synchronize
+                return random.Next(min, max);
+            }
+        }
+
+        private List<Point> GetRandomIntPoints(int amount, int coordBound)
+        {
+            List<Point> randomPoints = new List<Point>();
+            for (int i = 0; i < amount; i++)
+                randomPoints.Add(new Point(RandomIntNumber(-coordBound, coordBound), RandomIntNumber(-coordBound, coordBound)));
+            return randomPoints;
+        }
+
+        private List<Point> GetRandomDoublePoints(int amount, double coordBound)
+        {
+            List<Point> randomPoints = new List<Point>();
+            for (int i = 0; i < amount; i++)
+                randomPoints.Add(new Point(RandomDoubleNumber(coordBound), RandomDoubleNumber(coordBound)));
+            return randomPoints;
+        }
 
         public List<Point> HalfPlaneAngularSort()
         {
@@ -51,6 +86,47 @@ namespace ComputationalGeometry2D
             };
             points = geometry.AllPlaneAngularSort(points, pole, AngularSortDirection.CounterClockwise, AngularSortStartLocation.PositiveX);
             return points;
+        }
+
+        public bool ClosestPairSweepLineAndRecursiveTest(int pointsCount = 2000000, double coordBound = 300000.0)
+        {
+            List<Point> points = GetRandomDoublePoints(pointsCount, coordBound);
+            stopWatch.Start();
+            ClosestPointsPairResult sweepLineResult = geometry.ClosestPairSweepLine(points);
+            long sweepLineTime = stopWatch.ElapsedMilliseconds;
+            stopWatch.Restart();
+            ClosestPointsPairResult recursiveResult = geometry.ClosestPairRecursive(points);
+            long recursiveTime = stopWatch.ElapsedMilliseconds;
+            stopWatch.Reset();
+            bool resultsAreEqual = sweepLineResult.MinDist.IsAlmostEqualTo(recursiveResult.MinDist)
+                && sweepLineResult.PointsPairs.Count == recursiveResult.PointsPairs.Count;
+            return resultsAreEqual;
+        }
+
+        public bool ConvexHullGrahamScanAndJarvisTest(int pointsCount = 500000, double coordBound = 300000.0)
+        {
+            List<Point> points = GetRandomDoublePoints(pointsCount, coordBound);
+            stopWatch.Start();
+            Point[] convexHullGrahamScan = geometry.ConvexHullGrahamScan(points).ToArray();
+            long grahamScanTime = stopWatch.ElapsedMilliseconds;
+            stopWatch.Restart();
+            Point[] convexHullJarvis = geometry.ConvexHullJarvis(points).ToArray();
+            long jarvisTime = stopWatch.ElapsedMilliseconds;
+            stopWatch.Reset();
+            bool resultsAreEqual = true;
+            int resultLength = convexHullGrahamScan.Length;
+            if (resultLength != convexHullJarvis.Length)
+                return false;
+            for (int i = 0; i < resultLength; i++)
+            {
+                if (!convexHullGrahamScan[i].Equals(convexHullJarvis[i]))
+                {
+                    resultsAreEqual = false;
+                    break;
+                }
+            }
+
+            return resultsAreEqual;          
         }
     }
 }

@@ -62,19 +62,16 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GeometricAlgorithms.cs" />
+    <Compile Include="PointsIDOrder.cs" />
     <Compile Include="LineSegment.cs" />
     <Compile Include="DoublesComparer.cs" />
     <Compile Include="ClosestPointsPairResult.cs" />
     <Compile Include="OrientationTestResult.cs" />
     <Compile Include="Point.cs" />
-    <Compile Include="HalfPlanePointsAngularComparer.cs" />
-    <Compile Include="PointsAngularComparer.cs" />
+    <Compile Include="HalfPlanePointsAngularIDComparer.cs" />
+    <Compile Include="PointsAngularIDComparer.cs" />
     <Compile Include="PointsCoordDuplicatesMode.cs" />
-    <Compile Include="PointsXYEqualityComparer.cs" />
-    <Compile Include="PointsPolarCoordIDComparer.cs" />
-    <Compile Include="PointsXYComparer.cs" />
     <Compile Include="PointsXYIDComparer.cs" />
-    <Compile Include="PointsYXComparer.cs" />
     <Compile Include="PointsYXIDComparer.cs" />
     <Compile Include="AngularSortDirection.cs" />
     <Compile Include="AngularSortStartLocation.cs" />

@@ -31,6 +31,7 @@
             this.bialy = new System.Windows.Forms.PictureBox();
             this.trans = new System.Windows.Forms.PictureBox();
             this.menu_pnl = new System.Windows.Forms.Panel();
+            this.convexHullGrahamScan_btn = new System.Windows.Forms.Button();
             this.clear_btn = new System.Windows.Forms.Button();
             this.pointY_txtB = new System.Windows.Forms.TextBox();
             this.pointX_txtB = new System.Windows.Forms.TextBox();
@@ -44,7 +45,7 @@
             this.orientationTest_btn = new System.Windows.Forms.Button();
             this.points_lb = new System.Windows.Forms.ListBox();
             this.segments_lb = new System.Windows.Forms.ListBox();
-            this.convexHullGrahamScan_btn = new System.Windows.Forms.Button();
+            this.convexHullJarvis_btn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bialy)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trans)).BeginInit();
             this.menu_pnl.SuspendLayout();
@@ -73,6 +74,7 @@
             // 
             // menu_pnl
             // 
+            this.menu_pnl.Controls.Add(this.convexHullJarvis_btn);
             this.menu_pnl.Controls.Add(this.convexHullGrahamScan_btn);
             this.menu_pnl.Controls.Add(this.clear_btn);
             this.menu_pnl.Controls.Add(this.pointY_txtB);
@@ -91,6 +93,16 @@
             this.menu_pnl.Name = "menu_pnl";
             this.menu_pnl.Size = new System.Drawing.Size(410, 600);
             this.menu_pnl.TabIndex = 2;
+            // 
+            // convexHullGrahamScan_btn
+            // 
+            this.convexHullGrahamScan_btn.Location = new System.Drawing.Point(22, 466);
+            this.convexHullGrahamScan_btn.Name = "convexHullGrahamScan_btn";
+            this.convexHullGrahamScan_btn.Size = new System.Drawing.Size(142, 23);
+            this.convexHullGrahamScan_btn.TabIndex = 13;
+            this.convexHullGrahamScan_btn.Text = "Convex Hull Graham Scan";
+            this.convexHullGrahamScan_btn.UseVisualStyleBackColor = true;
+            this.convexHullGrahamScan_btn.Click += new System.EventHandler(this.convexHullGrahamScan_btn_Click);
             // 
             // clear_btn
             // 
@@ -208,15 +220,15 @@
             this.segments_lb.Size = new System.Drawing.Size(183, 108);
             this.segments_lb.TabIndex = 0;
             // 
-            // convexHullGrahamScan_btn
+            // convexHullJarvis_btn
             // 
-            this.convexHullGrahamScan_btn.Location = new System.Drawing.Point(22, 466);
-            this.convexHullGrahamScan_btn.Name = "convexHullGrahamScan_btn";
-            this.convexHullGrahamScan_btn.Size = new System.Drawing.Size(142, 23);
-            this.convexHullGrahamScan_btn.TabIndex = 13;
-            this.convexHullGrahamScan_btn.Text = "Convex Hull Graham Scan";
-            this.convexHullGrahamScan_btn.UseVisualStyleBackColor = true;
-            this.convexHullGrahamScan_btn.Click += new System.EventHandler(this.convexHullGrahamScan_btn_Click);
+            this.convexHullJarvis_btn.Location = new System.Drawing.Point(170, 466);
+            this.convexHullJarvis_btn.Name = "convexHullJarvis_btn";
+            this.convexHullJarvis_btn.Size = new System.Drawing.Size(104, 23);
+            this.convexHullJarvis_btn.TabIndex = 14;
+            this.convexHullJarvis_btn.Text = "Convex Hull Jarvis";
+            this.convexHullJarvis_btn.UseVisualStyleBackColor = true;
+            this.convexHullJarvis_btn.Click += new System.EventHandler(this.convexHullJarvis_btn_Click);
             // 
             // Form1
             // 
@@ -256,6 +268,7 @@
         private System.Windows.Forms.Button addPoint_btn;
         private System.Windows.Forms.Button clear_btn;
         private System.Windows.Forms.Button convexHullGrahamScan_btn;
+        private System.Windows.Forms.Button convexHullJarvis_btn;
     }
 }
 
