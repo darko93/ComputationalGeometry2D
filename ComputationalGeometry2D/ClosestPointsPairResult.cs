@@ -15,9 +15,6 @@ namespace ComputationalGeometry2D
             PointsPairs = pointsPairs;
             MinDist = minDist;
         }
-
-        public ClosestPointsPairResult() { }
-
         public override string ToString() => $"Count = {PointsPairs.Count} MinDist = {MinDist}";
     }
 }
