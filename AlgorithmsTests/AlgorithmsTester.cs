@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-using MoreLinq;
 using ComparingDoubles;
 
 using ComputationalGeometry2D;
@@ -196,7 +195,7 @@ namespace AlgorithmsTests
             recursiveTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Reset();
             bool resultsAreEqual = sweepLineResult.MinDist.IsAlmostEqualTo(recursiveResult.MinDist)
-                && sweepLineResult.PointsPairs.Count == recursiveResult.PointsPairs.Count;
+                && sweepLineResult.ClosestPairs.Count == recursiveResult.ClosestPairs.Count;
             return resultsAreEqual;
         }
 

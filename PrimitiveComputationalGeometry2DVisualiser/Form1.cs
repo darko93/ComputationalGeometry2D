@@ -161,7 +161,7 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             
             MessageBox.Show($"{time1}\n{minDistPair1.MinDist}\n{time2}\n{minDistPair2.MinDist}");
 
-            foreach (UnorderedPointsPair pair in minDistPair2.PointsPairs)
+            foreach (UnorderedPointsPair pair in minDistPair2.ClosestPairs)
             {
                 ComputationalGeometry2D.Point p1 = pair.First;
                 PointF drawableP1 = new PointF((float)p1.X + 300, (float)-p1.Y + 300);

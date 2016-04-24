@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgorithmsTests", "AlgorithmsTests\AlgorithmsTests.csproj", "{4513AAD2-0544-4899-A705-EF2063E3A343}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparingDoubles", "ComparingDoubles\ComparingDoubles.csproj", "{115E1B6F-1F13-4F5A-9DC5-CE2750AB57A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimitiveComputationalGeometry2DVisualiser", "PrimitiveComputationalGeometry2DVisualiser\PrimitiveComputationalGeometry2DVisualiser.csproj", "{A4C11799-B0E2-47A4-97D6-3A465B40163A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputationalGeometry2D", "ComputationalGeometry2D\ComputationalGeometry2D.csproj", "{9A46CA9D-6CF4-4111-AE80-C6B283E9BE56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgorithmsTests", "AlgorithmsTests\AlgorithmsTests.csproj", "{C20189E3-1C79-4561-9B43-F3339ED5F0E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4513AAD2-0544-4899-A705-EF2063E3A343}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4513AAD2-0544-4899-A705-EF2063E3A343}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4513AAD2-0544-4899-A705-EF2063E3A343}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4513AAD2-0544-4899-A705-EF2063E3A343}.Release|Any CPU.Build.0 = Release|Any CPU
 		{115E1B6F-1F13-4F5A-9DC5-CE2750AB57A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{115E1B6F-1F13-4F5A-9DC5-CE2750AB57A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{115E1B6F-1F13-4F5A-9DC5-CE2750AB57A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{9A46CA9D-6CF4-4111-AE80-C6B283E9BE56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A46CA9D-6CF4-4111-AE80-C6B283E9BE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A46CA9D-6CF4-4111-AE80-C6B283E9BE56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C20189E3-1C79-4561-9B43-F3339ED5F0E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C20189E3-1C79-4561-9B43-F3339ED5F0E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C20189E3-1C79-4561-9B43-F3339ED5F0E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C20189E3-1C79-4561-9B43-F3339ED5F0E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

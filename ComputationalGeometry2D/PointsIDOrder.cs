@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    enum PointsIDOrder
+    internal enum PointsIDOrder
     {
         Ascending,
         Descending

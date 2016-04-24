@@ -8,7 +8,7 @@ using ComparingDoubles;
 
 namespace ComputationalGeometry2D
 {
-    class PointsAngularByOrientationIDComparer : Comparer<Point>
+    internal class PointsAngularByOrientationIDComparer : Comparer<Point>
     {
         private Point pole = null;
         private LineSegment segment = new LineSegment();

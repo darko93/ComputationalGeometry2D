@@ -42,7 +42,7 @@ namespace ComputationalGeometry2D
 
             TreeSet<Point> statusStructure = new TreeSet<Point>(new PointsYXIDComparer(PointsIDOrder.Ascending))
             {
-                new Point(Double.NegativeInfinity, Double.NegativeInfinity) // Meeded when MinDist = 0, to always allow find predecessor in status structure.
+                new Point(Double.NegativeInfinity, Double.NegativeInfinity) // Needed when MinDist = 0, to always allow find predecessor in status structure.
             };
 
             ClosestPointsPairResult result = new ClosestPointsPairResult(new List<UnorderedPointsPair>(), Double.PositiveInfinity);
@@ -53,12 +53,13 @@ namespace ComputationalGeometry2D
                 if (result.MinDist.IsAlmostEqualToZero())
                 {
                     Point previous = current;
-                    // Adding all pairs of distance 0, which consist of "current" and predecessors in "statusStructure".
+                    // Adding all pairs of distance 0, which consist of "current" and predecessors in status structure.
                     while ((previous = statusStructure.Predecessor(previous)).CoordinatesEqual(current))
-                        result.PointsPairs.Add(new UnorderedPointsPair(previous, current));
+                        result.ClosestPairs.Add(new UnorderedPointsPair(previous, current));
                 }
                 else
-                    UpdateClosestPair(current, result, statusStructure);
+                    TryUpdateClosestPair(current, result, statusStructure);
+                // Removing from status structure all points, which distance from "current" is gretaer than MinDist.
                 while ((current.X - firstActive.X).IsGreaterThanAndNotAlmostEqualTo(result.MinDist))
                 {
                     statusStructure.Remove(firstActive);
@@ -72,7 +73,7 @@ namespace ComputationalGeometry2D
         private Point downBound = new Point(0.0, 0.0);
         private Point upperBound = new Point(0.0, 0.0);
 
-        private void UpdateClosestPair(Point current, ClosestPointsPairResult result, TreeSet<Point> statusStructure)
+        private void TryUpdateClosestPair(Point current, ClosestPointsPairResult result, TreeSet<Point> statusStructure)
         {
             double minDist = result.MinDist;
 
@@ -86,12 +87,12 @@ namespace ComputationalGeometry2D
             {
                 dist = current.DistanceFrom(neighbor);
                 if (dist.IsAlmostEqualTo(minDist))
-                    result.PointsPairs.Add(new UnorderedPointsPair(neighbor, current));
+                    result.ClosestPairs.Add(new UnorderedPointsPair(neighbor, current));
                 else if (dist < minDist)
                 {
                     result.MinDist = dist;
-                    result.PointsPairs.Clear();
-                    result.PointsPairs.Add(new UnorderedPointsPair(neighbor, current));
+                    result.ClosestPairs.Clear();
+                    result.ClosestPairs.Add(new UnorderedPointsPair(neighbor, current));
                 }
             }
         }
@@ -172,7 +173,7 @@ namespace ComputationalGeometry2D
             ClosestPointsPairResult result;
             if (leftResult.MinDist.IsAlmostEqualTo(rightResult.MinDist))
             {
-                leftResult.PointsPairs.AddRange(rightResult.PointsPairs);
+                leftResult.ClosestPairs.AddRange(rightResult.ClosestPairs);
                 result = leftResult;
             }
             else if (leftResult.MinDist < rightResult.MinDist)
@@ -192,8 +193,8 @@ namespace ComputationalGeometry2D
                     while (j <= last && (iNeighborJSucc = middleXNeighborsSortedByY[j++]).CoordinatesEqual(iNeighbor))
                     {
                         UnorderedPointsPair pair = new UnorderedPointsPair(iNeighbor, iNeighborJSucc);
-                        if (!result.PointsPairs.Contains(pair)) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
-                            result.PointsPairs.Add(pair);
+                        if (!result.ClosestPairs.Contains(pair)) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
+                            result.ClosestPairs.Add(pair);
                     }
                 }
                 else
@@ -208,14 +209,14 @@ namespace ComputationalGeometry2D
                         if (dist.IsAlmostEqualTo(result.MinDist))
                         {
                             UnorderedPointsPair pair = new UnorderedPointsPair(iNeighbor, iNeighborJSucc);
-                            if (!result.PointsPairs.Contains(pair)) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
-                                result.PointsPairs.Add(pair);
+                            if (!result.ClosestPairs.Contains(pair)) // Need to check it, because in the middle neighborhood can be closest pair, which was already added during "conquer".
+                                result.ClosestPairs.Add(pair);
                         }
                         else if (dist < result.MinDist)
                         {
                             result.MinDist = dist;
-                            result.PointsPairs.Clear();
-                            result.PointsPairs.Add(new UnorderedPointsPair(iNeighbor, iNeighborJSucc));
+                            result.ClosestPairs.Clear();
+                            result.ClosestPairs.Add(new UnorderedPointsPair(iNeighbor, iNeighborJSucc));
                         }
                     }
                 }

@@ -8,7 +8,7 @@ using ComparingDoubles;
 
 namespace ComputationalGeometry2D
 {
-    class PointsXYIDComparer : Comparer<Point>
+    internal class PointsXYIDComparer : Comparer<Point>
     {
         private int idOrderMultiplier = 1;
 

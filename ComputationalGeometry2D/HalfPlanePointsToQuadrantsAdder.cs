@@ -8,7 +8,7 @@ using ComparingDoubles;
 
 namespace ComputationalGeometry2D
 {
-    class HalfPlanePointsToQuadrantsAdder
+    internal class HalfPlanePointsToQuadrantsAdder
     {
         protected Point pole = null;
 

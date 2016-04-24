@@ -19,6 +19,7 @@ namespace AlgorithmsTests.cs
             //AlgorithmsTester.Instance.HalfPlaneAngularSortConcretePoints();
             //AlgorithmsTester.Instance.AllPlaneAngularSortAllCases(100000);
             //MinByAngleTest();
+            //TreeSetRangeFromTo();
             Console.ReadKey();
         }
 

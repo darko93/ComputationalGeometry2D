@@ -8,13 +8,13 @@ namespace ComputationalGeometry2D
 {
     public class ClosestPointsPairResult
     {
-        public List<UnorderedPointsPair> PointsPairs { get; internal set; } = new List<ComputationalGeometry2D.UnorderedPointsPair>();
+        public List<UnorderedPointsPair> ClosestPairs { get; internal set; } = new List<ComputationalGeometry2D.UnorderedPointsPair>();
         public double MinDist { get; internal set; }
-        public ClosestPointsPairResult(List<UnorderedPointsPair> pointsPairs, double minDist)
+        public ClosestPointsPairResult(List<UnorderedPointsPair> closestPairs, double minDist)
         {
-            PointsPairs = pointsPairs;
+            ClosestPairs = closestPairs;
             MinDist = minDist;
         }
-        public override string ToString() => $"Count = {PointsPairs.Count} MinDist = {MinDist}";
+        public override string ToString() => $"Count = {ClosestPairs.Count} MinDist = {MinDist}";
     }
 }

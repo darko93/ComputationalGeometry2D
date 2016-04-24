@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using ComputationalGeometry2D;
 using ComparingDoubles;
-using MoreLinq;
 
 namespace AlgorithmsTests
 {

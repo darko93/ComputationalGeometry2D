@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComparingDoubles
 {
-    sealed class DoublesComparer
+    internal class DoublesComparer
     {
         public const double AcceptableRelativeDifference = 1E-9;
 

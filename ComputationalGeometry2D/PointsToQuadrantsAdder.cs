@@ -8,7 +8,7 @@ using ComparingDoubles;
 
 namespace ComputationalGeometry2D
 {
-    sealed class PointsToQuadrantsAdder : HalfPlanePointsToQuadrantsAdder
+    internal sealed class PointsToQuadrantsAdder : HalfPlanePointsToQuadrantsAdder
     {
         public List<Point> ThirdBySortOrderQuadrant { get; private set; } = new List<Point>();
         public List<Point> FourthBySortOrderQuadrant { get; private set; } = new List<Point>();
