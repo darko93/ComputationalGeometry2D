@@ -34,89 +34,65 @@ namespace ComputationalGeometry2D
         // For points of the same coordinates use different instances.
         public ClosestPointsPairResult ClosestPairSweepLine(List<Point> points)
         {
-            List<UnorderedPointsPair> closestPairs = new List<UnorderedPointsPair>();
-            double minDist = Double.PositiveInfinity;
-
             TreeSet<Point> eventQueue = new TreeSet<Point>(new PointsXYIDComparer(PointsIDOrder.Ascending));
             points.ForEach(p => eventQueue.Add(p));
 
             if (eventQueue.Count <= 1)
                 return NoClosestPair;
 
-            //Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
-            //Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
-            TreeSet<Point> statusStructure = new TreeSet<Point>(new PointsYXIDComparer(PointsIDOrder.Ascending));
-            //{
-            //    rightBound,
-            //    leftBound
-            //};
+            TreeSet<Point> statusStructure = new TreeSet<Point>(new PointsYXIDComparer(PointsIDOrder.Ascending))
+            {
+                new Point(Double.NegativeInfinity, Double.NegativeInfinity) // Meeded when MinDist = 0, to always allow find predecessor in status structure.
+            };
+
+            ClosestPointsPairResult result = new ClosestPointsPairResult(new List<UnorderedPointsPair>(), Double.PositiveInfinity);
 
             Point firstActive = eventQueue.FindMin();
             foreach(Point current in eventQueue) // Iterate over succeeding points.
             {
-                if (minDist.IsAlmostEqualToZero())
+                if (result.MinDist.IsAlmostEqualToZero())
                 {
                     Point previous = current;
-                    // Adding all pairs of distance 0, which consist of "current" and predecessors from "statusStructure".
+                    // Adding all pairs of distance 0, which consist of "current" and predecessors in "statusStructure".
                     while ((previous = statusStructure.Predecessor(previous)).CoordinatesEqual(current))
-                        closestPairs.Add(new UnorderedPointsPair(previous, current));
+                        result.PointsPairs.Add(new UnorderedPointsPair(previous, current));
                 }
                 else
+                    UpdateClosestPair(current, result, statusStructure);
+                while ((current.X - firstActive.X).IsGreaterThanAndNotAlmostEqualTo(result.MinDist))
                 {
-                    UpdateClosestPair(current, closestPairs, ref minDist, statusStructure);
-                    //UpdateClosestPairOnSide(current, rightBound, closestPairs, ref minDist, statusStructure.Successor);
-                    //UpdateClosestPairOnSide(current, leftBound, closestPairs, ref minDist, statusStructure.Predecessor);
+                    statusStructure.Remove(firstActive);
+                    firstActive = eventQueue.Successor(firstActive);
                 }
-                UpdateActivePoints(current, ref firstActive, minDist, eventQueue, statusStructure);
                 statusStructure.Add(current);
             }
-            return new ClosestPointsPairResult(closestPairs, minDist);
+            return result;
         }
 
-        private void UpdateClosestPair(Point current, List<UnorderedPointsPair> closestPairs, ref double minDist, TreeSet<Point> statusStructure)
+        private Point downBound = new Point(0.0, 0.0);
+        private Point upperBound = new Point(0.0, 0.0);
+
+        private void UpdateClosestPair(Point current, ClosestPointsPairResult result, TreeSet<Point> statusStructure)
         {
-            Point downBound = new Point(current.X, current.Y - minDist);
-            Point upperBound = new Point(current.X, current.Y + minDist);
+            double minDist = result.MinDist;
+
+            downBound.X = current.X - minDist;
+            downBound.Y = current.Y - minDist;
+            upperBound.X = current.X;
+            upperBound.Y = current.Y + minDist;
+
             double dist;
             foreach (Point neighbor in statusStructure.RangeFromTo(downBound, upperBound))
             {
                 dist = current.DistanceFrom(neighbor);
                 if (dist.IsAlmostEqualTo(minDist))
-                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
+                    result.PointsPairs.Add(new UnorderedPointsPair(neighbor, current));
                 else if (dist < minDist)
                 {
-                    minDist = dist;
-                    closestPairs.Clear();
-                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
+                    result.MinDist = dist;
+                    result.PointsPairs.Clear();
+                    result.PointsPairs.Add(new UnorderedPointsPair(neighbor, current));
                 }
-            }
-        }
-        /*
-        private void UpdateClosestPairOnSide(Point current, Point bound, List<UnorderedPointsPair> closestPairs, ref double minDist, getNeighborPoint neighborFunc)
-        {
-            Point neighbor = neighborFunc(current);
-            double dist;
-            for (int i = 0; i < 4 && !neighbor.CoordinatesEqual(bound); i++)
-            {
-                dist = current.DistanceFrom(neighbor);
-                if (dist.IsAlmostEqualTo(minDist))
-                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
-                else if (dist < minDist)
-                {
-                    minDist = dist;
-                    closestPairs.Clear();
-                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
-                }
-                neighbor = neighborFunc(neighbor);
-            }
-        }
-        */
-        private void UpdateActivePoints(Point current, ref Point firstActive, double minDist, TreeSet<Point> eventQueue, TreeSet<Point> statusStructure)
-        {
-            while ((current.X - firstActive.X).IsGreaterThanAndNotAlmostEqualTo(minDist))
-            {
-                statusStructure.Remove(firstActive);
-                firstActive = eventQueue.Successor(firstActive);
             }
         }
 
@@ -332,21 +308,5 @@ namespace ComputationalGeometry2D
 
             return stack;
         }
-
-        //public void MinByAngleTest(List<Point> points, AngularSortDirection direction, AngularSortStartLocation startLocation, out long quadrantTime, out long halfPlaneTime)
-        //{
-        //    System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-        //    Point pole = points[points.Count / 2];
-        //    PointsAngularByOrientationIDComparer quadrantComparer = new PointsAngularByOrientationIDComparer(pole, direction);
-        //    HalfPlanePointsAngularIDComparer halfPlaneComparer = new HalfPlanePointsAngularIDComparer(pole, startLocation, direction);
-        //    Point pp;
-        //    foreach (Point point in points)
-        //        pp = points.MinBy(p => p, quadrantComparer);
-        //    quadrantTime = sw.ElapsedMilliseconds;
-        //    sw.Restart();
-        //    foreach (Point point in points)
-        //        pp = points.MinBy(p => p, halfPlaneComparer);
-        //    halfPlaneTime = sw.ElapsedMilliseconds;
-        //}
     }
 }

@@ -12,8 +12,7 @@ namespace AlgorithmsTests.cs
     {
         static void Main(string[] args)
         {
-            ConvexHullAlgorithms();
-            //ClosestPairsAlgorithms();
+            ClosestPairsAlgorithms();
             //AllPlaneAngularSort();
             //AlgorithmsTester.Instance.AllPlaneAngularSortConcretePoints();
             //HalfPlaneAngularSort();

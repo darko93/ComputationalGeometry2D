@@ -21,7 +21,16 @@ namespace PrimitiveComputationalGeometry2DVisualiser
         List<ComputationalGeometry2D.Point> points = new List<ComputationalGeometry2D.Point>();
         System.Drawing.Point p1;
 
-        private GeometricAlgorithms geometry = new GeometricAlgorithms();
+        private GeometricAlgorithms geometry = null;
+        private GeometricAlgorithms Geometry
+        {
+            get
+            {
+                if (geometry == null)
+                    geometry = new GeometricAlgorithms();
+                return geometry;
+            }
+        }
 
         private static readonly Random random = new Random();
         private static readonly object syncLock = new object();
@@ -142,11 +151,11 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             //long time0 = sw.ElapsedMilliseconds;
             //sw.Restart();
 
-            ClosestPointsPairResult minDistPair1 = geometry.ClosestPairSweepLine(points);
+            ClosestPointsPairResult minDistPair1 = Geometry.ClosestPairSweepLine(points);
             long time1 = sw.ElapsedMilliseconds;
             sw.Restart();
 
-            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(points);
+            ClosestPointsPairResult minDistPair2 = Geometry.ClosestPairRecursive(points);
             long time2 = sw.ElapsedMilliseconds;
             sw.Stop();
             
@@ -188,7 +197,7 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
         private void convexHullGrahamScan_btn_Click(object sender, EventArgs e)
         {
-            Stack<ComputationalGeometry2D.Point> convexHull = geometry.ConvexHullGrahamScan(points);
+            Stack<ComputationalGeometry2D.Point> convexHull = Geometry.ConvexHullGrahamScan(points);
             StringBuilder convexHullSb = new StringBuilder();
             foreach (ComputationalGeometry2D.Point p in convexHull)
                 convexHullSb.AppendLine(p.ToString());
@@ -197,7 +206,7 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
         private void convexHullJarvis_btn_Click(object sender, EventArgs e)
         {
-            Stack<ComputationalGeometry2D.Point> convexHull = geometry.ConvexHullJarvis(points);
+            Stack<ComputationalGeometry2D.Point> convexHull = Geometry.ConvexHullJarvis(points);
             StringBuilder convexHullSb = new StringBuilder();
             foreach (ComputationalGeometry2D.Point p in convexHull)
                 convexHullSb.AppendLine(p.ToString());

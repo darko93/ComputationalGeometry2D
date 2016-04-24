@@ -23,6 +23,8 @@ namespace ComputationalGeometry2D
             ID = id++;
         }
 
+        public Point() { }
+
         public bool LiesToTheLeftOf(LineSegment segment) =>
             segment.DirectionFrom(this).IsGreaterThanAndNotAlmostEqualToZero();
 
