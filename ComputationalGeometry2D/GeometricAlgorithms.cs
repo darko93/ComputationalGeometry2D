@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using ComparingDoubles;
 using C5;
 using MoreLinq;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("AlgorithmsTests")]
 
 namespace ComputationalGeometry2D
 {
-    class GeometricAlgorithms
+    public class GeometricAlgorithms
     {
         //http://www.cosc.canterbury.ac.nz/mukundan/cgeo/Sweep1.html
 
@@ -39,13 +43,13 @@ namespace ComputationalGeometry2D
             if (eventQueue.Count <= 1)
                 return NoClosestPair;
 
-            Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
-            Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
-            TreeSet<Point> statusStructure = new TreeSet<Point>(new PointsYXIDComparer(PointsIDOrder.Ascending))
-            {
-                rightBound,
-                leftBound
-            };
+            //Point rightBound = new Point(Double.NegativeInfinity, Double.PositiveInfinity);
+            //Point leftBound = new Point(Double.NegativeInfinity, Double.NegativeInfinity);
+            TreeSet<Point> statusStructure = new TreeSet<Point>(new PointsYXIDComparer(PointsIDOrder.Ascending));
+            //{
+            //    rightBound,
+            //    leftBound
+            //};
 
             Point firstActive = eventQueue.FindMin();
             foreach(Point current in eventQueue) // Iterate over succeeding points.
@@ -53,14 +57,15 @@ namespace ComputationalGeometry2D
                 if (minDist.IsAlmostEqualToZero())
                 {
                     Point previous = current;
-                    // Adding all pairs of distance 0, which consist of "current" and predecessors from "broom".
+                    // Adding all pairs of distance 0, which consist of "current" and predecessors from "statusStructure".
                     while ((previous = statusStructure.Predecessor(previous)).CoordinatesEqual(current))
                         closestPairs.Add(new UnorderedPointsPair(previous, current));
                 }
                 else
                 {
-                    UpdateClosestPairOnSide(current, rightBound, closestPairs, ref minDist, statusStructure.Successor);
-                    UpdateClosestPairOnSide(current, leftBound, closestPairs, ref minDist, statusStructure.Predecessor);
+                    UpdateClosestPair(current, closestPairs, ref minDist, statusStructure);
+                    //UpdateClosestPairOnSide(current, rightBound, closestPairs, ref minDist, statusStructure.Successor);
+                    //UpdateClosestPairOnSide(current, leftBound, closestPairs, ref minDist, statusStructure.Predecessor);
                 }
                 UpdateActivePoints(current, ref firstActive, minDist, eventQueue, statusStructure);
                 statusStructure.Add(current);
@@ -68,25 +73,44 @@ namespace ComputationalGeometry2D
             return new ClosestPointsPairResult(closestPairs, minDist);
         }
 
-        private void UpdateClosestPairOnSide(Point current, Point boundPoint, List<UnorderedPointsPair> minDistPair, ref double minDist, getNeighborPoint neighborFunc)
+        private void UpdateClosestPair(Point current, List<UnorderedPointsPair> closestPairs, ref double minDist, TreeSet<Point> statusStructure)
         {
-            Point neighborPoint = neighborFunc(current);
+            Point downBound = new Point(current.X, current.Y - minDist);
+            Point upperBound = new Point(current.X, current.Y + minDist);
             double dist;
-            for (int i = 0; i < 4 && !neighborPoint.CoordinatesEqual(boundPoint); i++)
+            foreach (Point neighbor in statusStructure.RangeFromTo(downBound, upperBound))
             {
-                dist = current.DistanceFrom(neighborPoint);
+                dist = current.DistanceFrom(neighbor);
                 if (dist.IsAlmostEqualTo(minDist))
-                    minDistPair.Add(new UnorderedPointsPair(neighborPoint, current));
+                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
                 else if (dist < minDist)
                 {
                     minDist = dist;
-                    minDistPair.Clear();
-                    minDistPair.Add(new UnorderedPointsPair(neighborPoint, current));
+                    closestPairs.Clear();
+                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
                 }
-                neighborPoint = neighborFunc(neighborPoint);
             }
         }
-        
+        /*
+        private void UpdateClosestPairOnSide(Point current, Point bound, List<UnorderedPointsPair> closestPairs, ref double minDist, getNeighborPoint neighborFunc)
+        {
+            Point neighbor = neighborFunc(current);
+            double dist;
+            for (int i = 0; i < 4 && !neighbor.CoordinatesEqual(bound); i++)
+            {
+                dist = current.DistanceFrom(neighbor);
+                if (dist.IsAlmostEqualTo(minDist))
+                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
+                else if (dist < minDist)
+                {
+                    minDist = dist;
+                    closestPairs.Clear();
+                    closestPairs.Add(new UnorderedPointsPair(neighbor, current));
+                }
+                neighbor = neighborFunc(neighbor);
+            }
+        }
+        */
         private void UpdateActivePoints(Point current, ref Point firstActive, double minDist, TreeSet<Point> eventQueue, TreeSet<Point> statusStructure)
         {
             while ((current.X - firstActive.X).IsGreaterThanAndNotAlmostEqualTo(minDist))
@@ -136,7 +160,7 @@ namespace ComputationalGeometry2D
             if (points.Count <= 1)
                 return NoClosestPair;
             
-            else if (sameInstancesContainedInList)
+            if (sameInstancesContainedInList)
                 points = points.Distinct().ToList(); // Remove referenece equal points.
 
             PointsXYIDComparer pointsXYIDComparer = new PointsXYIDComparer(PointsIDOrder.Ascending);
@@ -146,7 +170,7 @@ namespace ComputationalGeometry2D
             return ClosestPairRecursive(sortedByX, sortedByY, pointsXYIDComparer);
         }
 
-        public ClosestPointsPairResult ClosestPairRecursive(List<Point> sortedByX, List<Point> sortedByY, PointsXYIDComparer pointsXYIDComparer)
+        private ClosestPointsPairResult ClosestPairRecursive(List<Point> sortedByX, List<Point> sortedByY, PointsXYIDComparer pointsXYIDComparer)
         {
             int pointsCount = sortedByX.Count;
             if (pointsCount <= 3)
@@ -223,37 +247,26 @@ namespace ComputationalGeometry2D
             return result;
         }
 
-        public List<Point> HalfPlaneAngularSort(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation) =>
-            points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, direction)).ToList();
+        public List<Point> HalfPlaneAngularSort(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation)
+        {
+            HalfPlanePointsToQuadrantsAdder pointsToQuadrantsAdder = new HalfPlanePointsToQuadrantsAdder(pole, direction, startLocation);
+            points.ForEach(p => pointsToQuadrantsAdder.Add(p));
+            PointsAngularByOrientationIDComparer pointsAngularByOrientationIDComparer = new PointsAngularByOrientationIDComparer(pole, direction, PointsIDOrder.Ascending);
+            List<Point> firstSortedQuadrant = pointsToQuadrantsAdder.FirstBySortOrderQuadrant.OrderBy(p => p, pointsAngularByOrientationIDComparer).ToList();
+            List<Point> secondSortedQuadrant = pointsToQuadrantsAdder.SecondBySortOrderQuadrant.OrderBy(p => p, pointsAngularByOrientationIDComparer).ToList();
+            return firstSortedQuadrant.Concat(secondSortedQuadrant).ToList();
+        }
 
         public List<Point> AllPlaneAngularSort(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation)
         {
-            List<Point> halfPlane1Points, halfPlane2Points;
-
-            AngularSortStartLocation secondHalfPlaneStartLocation;
-            if (startLocation == AngularSortStartLocation.PositiveX)
-                secondHalfPlaneStartLocation = AngularSortStartLocation.NegativeX;
-            else if (startLocation == AngularSortStartLocation.NegativeX)
-                secondHalfPlaneStartLocation = AngularSortStartLocation.PositiveX;
-            else if (startLocation == AngularSortStartLocation.PositiveY)
-                secondHalfPlaneStartLocation = AngularSortStartLocation.NegativeY;
-            else // if (startLocation == AngularSortStartLocation.NegativeY)
-                secondHalfPlaneStartLocation = AngularSortStartLocation.PositiveY;
-
-            if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.NegativeX)
-            {
-                halfPlane1Points = points.Where(p => p.Y.IsGreaterThanOrAlmostEqualTo(pole.Y)).ToList();
-                halfPlane2Points = points.Where(p => p.Y.IsLessThanAndNotAlmostEqualTo(pole.Y)).ToList();
-            }
-            else //if (startLocation == PolarSortStartLocation.PositiveY || startLocation == PolarSortStartLocation.NegativeY)
-            {
-                halfPlane1Points = points.Where(p => p.X.IsGreaterThanOrAlmostEqualTo(pole.X)).ToList();
-                halfPlane2Points = points.Where(p => p.X.IsLessThanAndNotAlmostEqualTo(pole.X)).ToList();
-            }
-            halfPlane1Points = halfPlane1Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, direction)).ToList();
-            halfPlane2Points = halfPlane2Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, secondHalfPlaneStartLocation, direction)).ToList();
-            halfPlane1Points.AddRange(halfPlane2Points);
-            return halfPlane1Points;
+            PointsToQuadrantsAdder pointsToQuadrantsAdder = new PointsToQuadrantsAdder(pole, direction, startLocation);
+            points.ForEach(p => pointsToQuadrantsAdder.Add(p));
+            PointsAngularByOrientationIDComparer pointsAngularByOrientationIDComparer = new PointsAngularByOrientationIDComparer(pole, direction, PointsIDOrder.Ascending);
+            List<Point> firstSortedQuadrant = pointsToQuadrantsAdder.FirstBySortOrderQuadrant.OrderBy(p => p, pointsAngularByOrientationIDComparer).ToList();
+            List<Point> secondSortedQuadrant = pointsToQuadrantsAdder.SecondBySortOrderQuadrant.OrderBy(p => p, pointsAngularByOrientationIDComparer).ToList();
+            List<Point> thirdSortedQuadrant = pointsToQuadrantsAdder.ThirdBySortOrderQuadrant.OrderBy(p => p, pointsAngularByOrientationIDComparer).ToList();
+            List<Point> fourthSortedQuadrant = pointsToQuadrantsAdder.FourthBySortOrderQuadrant.OrderBy(p => p, pointsAngularByOrientationIDComparer).ToList();
+            return firstSortedQuadrant.Concat(secondSortedQuadrant).Concat(thirdSortedQuadrant).Concat(fourthSortedQuadrant).ToList();
         }
 
         public Stack<Point> ConvexHullGrahamScan(List<Point> points)
@@ -296,30 +309,44 @@ namespace ComputationalGeometry2D
             Point current = minYPoint;
             stack.Push(current);
 
-            HalfPlanePointsAngularIDComparer halfPlanePointsAngularIDComparer = 
-              new HalfPlanePointsAngularIDComparer(minYPoint, AngularSortStartLocation.PositiveX, AngularSortDirection.CounterClockwise, PointsIDOrder.Ascending);
+            PointsAngularByOrientationIDComparer pointsAngularByOrientationIDComparer = new PointsAngularByOrientationIDComparer(minYPoint, AngularSortDirection.CounterClockwise);
 
             while (!current.Equals(maxYPoint))
             {
-                halfPlanePointsAngularIDComparer.SetPole(current);
+                pointsAngularByOrientationIDComparer.SetPole(current);
                 current = points
-                    .Where(p => pointsYXIDComparer.Compare(p, current) > 0) // redundant??
-                    .MinBy(p => p, halfPlanePointsAngularIDComparer);
+                    .Where(p => pointsYXIDComparer.Compare(p, current) > 0)
+                    .MinBy(p => p, pointsAngularByOrientationIDComparer);
                 stack.Push(current);
             }
             pointsYXIDComparer.SetIDOrder(PointsIDOrder.Descending);
-            halfPlanePointsAngularIDComparer.SetSortStartLocation(AngularSortStartLocation.NegativeX);
             while (!current.Equals(minYPoint))
             {
-                halfPlanePointsAngularIDComparer.SetPole(current);
+                pointsAngularByOrientationIDComparer.SetPole(current);
                 current = points
-                    .Where(p => pointsYXIDComparer.Compare(p, current) < 0) // redundant??
-                    .MinBy(p => p, halfPlanePointsAngularIDComparer);
+                    .Where(p => pointsYXIDComparer.Compare(p, current) < 0)
+                    .MinBy(p => p, pointsAngularByOrientationIDComparer);
                 stack.Push(current);
             }
             stack.Pop();
 
             return stack;
         }
+
+        //public void MinByAngleTest(List<Point> points, AngularSortDirection direction, AngularSortStartLocation startLocation, out long quadrantTime, out long halfPlaneTime)
+        //{
+        //    System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+        //    Point pole = points[points.Count / 2];
+        //    PointsAngularByOrientationIDComparer quadrantComparer = new PointsAngularByOrientationIDComparer(pole, direction);
+        //    HalfPlanePointsAngularIDComparer halfPlaneComparer = new HalfPlanePointsAngularIDComparer(pole, startLocation, direction);
+        //    Point pp;
+        //    foreach (Point point in points)
+        //        pp = points.MinBy(p => p, quadrantComparer);
+        //    quadrantTime = sw.ElapsedMilliseconds;
+        //    sw.Restart();
+        //    foreach (Point point in points)
+        //        pp = points.MinBy(p => p, halfPlaneComparer);
+        //    halfPlaneTime = sw.ElapsedMilliseconds;
+        //}
     }
 }

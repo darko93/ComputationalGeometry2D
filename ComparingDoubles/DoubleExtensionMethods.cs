@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComputationalGeometry2D
+namespace ComparingDoubles
 {
-    static class DoubleExtensionMethods
+    public static class DoubleExtensionMethods
     {
         private static DoublesComparer doublesComparer = new DoublesComparer();
-
+    
         public static bool IsAlmostEqualTo(this double thisValue, double value, double acceptableRelativeDifference = DoublesComparer.AcceptableRelativeDifference) =>
             doublesComparer.AlmostEqualTo(thisValue, value, acceptableRelativeDifference);
 
@@ -25,7 +25,7 @@ namespace ComputationalGeometry2D
         public static bool IsLessThanOrAlmostEqualTo(this double thisValue, double value, double acceptableRelativeDifference = DoublesComparer.AcceptableRelativeDifference) =>
             doublesComparer.LessThanOrAlmostEqualTo(thisValue, value, acceptableRelativeDifference);
 
-        //Extra methods for comparing to zero for better performence, because it's often needed to compare to zero. 
+        //Extra methods for comparing to zero for better performence (it's often needed to compare to zero). 
         public static bool IsAlmostEqualToZero(this double thisValue, double acceptableRelativeDifference = DoublesComparer.AcceptableRelativeDifference) =>
             doublesComparer.AlmostEqualToZero(thisValue, acceptableRelativeDifference);
 

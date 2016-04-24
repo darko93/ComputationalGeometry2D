@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    class UnorderedPointsPair : IEquatable<UnorderedPointsPair>
+    public class UnorderedPointsPair : IEquatable<UnorderedPointsPair>
     {
         public Point First { get; private set; }
         public Point Second { get; private set; }

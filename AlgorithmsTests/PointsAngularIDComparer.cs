@@ -3,7 +3,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComputationalGeometry2D
+using ComputationalGeometry2D;
+using ComparingDoubles;
+
+namespace AlgorithmsTests
 {
     class PointsAngularIDComparer : Comparer<Point>
     {
@@ -13,7 +16,7 @@ namespace ComputationalGeometry2D
         private LineSegment segment = new LineSegment();
 
         private int directionMultiplier = 1;
-        private int quadrantMultiplier = 1; // Needed only to calculate halfPlaneMultiplier 
+        private int quadrantMultiplier = 1; 
         private int halfPlaneMultiplier = 1;
         private int idOrderMultiplier = 1;
 
@@ -24,16 +27,18 @@ namespace ComputationalGeometry2D
         private comparePoints liesInEarlierHalfPlane = null;
         private comparePoints liesInLaterHalfPlane = null;
 
+        private delegate bool processPoint(Point point);
+        private processPoint liesInSecondBySortOrderHalfPlane = null;
+
         public PointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularSortDirection direction, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
         {
             SetPole(pole);
-            SetOnlySortStartLocation(startLocation); // base.SetSortStartLocation(startLocation);
-            SetOnlySortDirection(direction) ;// base.SetOnlySortDirection(direction);
+            SetQuadrantMultiplier(startLocation); // base
+            SetDirectionMultiplier(direction); // base
             SetHalfPlaneMultiplier();
-            SetIDOrder(pointsIDOrder);
+            SetQuadrantAndHalfPlaneDelegates(startLocation);
 
-            // or just base(pole, startLocation, direction, pointsIDOrder); SetHalfPlaneMultiplier();
-            // if it will call reight method...
+            SetIDOrder(pointsIDOrder);
         }
 
         public void SetPole(Point pole)
@@ -42,13 +47,8 @@ namespace ComputationalGeometry2D
             segment.Start = pole;
         }
 
-        private void SetOnlySortStartLocation(AngularSortStartLocation startLocation)
+        private void SetQuadrantAndHalfPlaneDelegates(AngularSortStartLocation startLocation)
         {
-            if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.PositiveY)
-                quadrantMultiplier = 1;
-            else // if (startLocation == AngularSortStartLocation.NegativeX || startLocation == AngularSortStartLocation.NegativeY)
-                quadrantMultiplier = -1;
-
             if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.NegativeX)
             {
                 // SetHorizontalMethods() - virtual
@@ -57,6 +57,10 @@ namespace ComputationalGeometry2D
 
                 liesInEarlierHalfPlane = LiesInEarlierHorizontalHalfPlane;
                 liesInLaterHalfPlane = LiesInLaterHorizontalHalfPlane;
+
+                if (halfPlaneMultiplier > 0)
+                    liesInSecondBySortOrderHalfPlane = LiesInDownHalfPlane;
+                else liesInSecondBySortOrderHalfPlane = LiesInUpperHalfPlane;
             }
             else // if (startLocation == AngularSortStartLocation.PositiveY || startLocation == AngularSortStartLocation.NegativeY)
             {
@@ -65,7 +69,11 @@ namespace ComputationalGeometry2D
                 liesInLaterQuadrant = LiesInLaterNegativeXQuadrant;
 
                 liesInEarlierHalfPlane = LiesInEarlierVerticalHalfPlane;
-                liesInLaterHalfPlane = LiesInLaterHorizontalHalfPlane;
+                liesInLaterHalfPlane = LiesInLaterVerticalHalfPlane;
+
+                if (halfPlaneMultiplier > 0)
+                    liesInSecondBySortOrderHalfPlane = LiesInRightHalfPlane;
+                else liesInSecondBySortOrderHalfPlane = LiesInLeftHalfPlane;
             }
         }
 
@@ -74,9 +82,20 @@ namespace ComputationalGeometry2D
         //    base.SetHorizontalMethods();
         //    liesInEarlierHalfPlane = LiesInEarlierHorizontalHalfPlane;
         //    liesInLaterHalfPlane = LiesInLaterHorizontalHalfPlane;
+        //    if (halfPlaneMultiplier > 0)
+        //        liesInSecondBySortOrderHalfPlane = LiesInDownHalfPlane;
+        //    else liesInSecondBySortOrderHalfPlane = LiesInUpperHalfPlane;
         //}
-        
-        private void SetOnlySortDirection(AngularSortDirection direction)
+
+        private void SetQuadrantMultiplier(AngularSortStartLocation startLocation)
+        {
+            if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.PositiveY)
+                quadrantMultiplier = 1;
+            else // if (startLocation == AngularSortStartLocation.NegativeX || startLocation == AngularSortStartLocation.NegativeY)
+                quadrantMultiplier = -1;
+        }
+
+        private void SetDirectionMultiplier(AngularSortDirection direction)
         {
             if (direction == AngularSortDirection.CounterClockwise)
                 directionMultiplier = 1;
@@ -86,21 +105,23 @@ namespace ComputationalGeometry2D
 
         private void SetHalfPlaneMultiplier()
         {
-            // If sort starts from earlier (upper or left) halfplane...
+            // Sort starts from earlier (upper or left) halfplane ?
             halfPlaneMultiplier = quadrantMultiplier == directionMultiplier ? 1 : -1;
         }
 
-        public /*override*/ void SetSortStartLocation(AngularSortStartLocation startLocation)
-        {
-            SetOnlySortStartLocation(startLocation); // base.SetSortStartLocation(startLocation);
-            SetHalfPlaneMultiplier();
-        }
+        //public /*override*/ void SetSortDirection(AngularSortDirection direction)
+        //{
+        //    SetDirectionMultiplier(direction); // base.SetSortDirection(direction);
+        //    SetHalfPlaneMultiplier();
+        //    // tu by jeszcze nalezalo ustawic liesInSecondBySortOrderHalfPlane, bo jest zalezny od halfPlaneMultiplier (i sortDirection :P)
+        //}
 
-        public /*override*/ void SetSortDirection(AngularSortDirection direction)
-        {
-            SetOnlySortDirection(direction); // base.SetOnlySortDirection(direction);
-            SetHalfPlaneMultiplier();
-        }
+        //public /*override*/ void SetSortStartLocation(AngularSortStartLocation startLocation)
+        //{
+        //    SetQuadrantMultiplier(startLocation);
+        //    SetHalfPlaneMultiplier();
+        //    SetQuadrantAndHalfPlaneDelegates(startLocation); // base.SetSortStartLocation(startLocation);
+        //}
 
         public void SetIDOrder(PointsIDOrder pointsIDOrder)
         {
@@ -112,6 +133,7 @@ namespace ComputationalGeometry2D
 
         private bool LiesInEarlierPositiveYQuadrant(Point p1, Point p2) =>
             p1.X.IsGreaterThanAndNotAlmostEqualTo(pole.X) && p2.X.IsLessThanAndNotAlmostEqualTo(pole.X);
+        //                                                                  OrAlmostEqualTo ??
 
         private bool LiesInLaterPositiveYQuadrant(Point p1, Point p2) =>
             p1.X.IsLessThanAndNotAlmostEqualTo(pole.X) && p2.X.IsGreaterThanAndNotAlmostEqualTo(pole.X);
@@ -125,6 +147,7 @@ namespace ComputationalGeometry2D
 
         private bool LiesInEarlierHorizontalHalfPlane(Point p1, Point p2) =>
             p1.Y.IsGreaterThanAndNotAlmostEqualTo(pole.Y) && p2.Y.IsLessThanAndNotAlmostEqualTo(pole.Y);
+        //                    OrAlmostEqualTo
 
         private bool LiesInLaterHorizontalHalfPlane(Point p1, Point p2) =>
             p1.Y.IsLessThanAndNotAlmostEqualTo(pole.Y) && p2.Y.IsGreaterThanAndNotAlmostEqualTo(pole.Y);
@@ -135,43 +158,52 @@ namespace ComputationalGeometry2D
         private bool LiesInLaterVerticalHalfPlane(Point p1, Point p2) =>
             p1.X.IsGreaterThanAndNotAlmostEqualTo(pole.X) && p2.X.IsLessThanAndNotAlmostEqualTo(pole.X);
 
+        private bool LiesInUpperHalfPlane(Point point) =>
+            point.Y.IsGreaterThanAndNotAlmostEqualTo(pole.Y);
+
+        private bool LiesInDownHalfPlane(Point point) =>
+            point.Y.IsLessThanAndNotAlmostEqualTo(pole.Y);
+
+        private bool LiesInLeftHalfPlane(Point point) =>
+            point.X.IsLessThanAndNotAlmostEqualTo(pole.X);
+
+        private bool LiesInRightHalfPlane(Point point) =>
+            point.X.IsGreaterThanAndNotAlmostEqualTo(pole.X);
+
         public override int Compare(Point p1, Point p2)
         {
-            int result;
+            if (liesInEarlierHalfPlane(p1, p2))
+                return -halfPlaneMultiplier; // -1 * halfPlaneMultiplier;
+            else if (liesInLaterHalfPlane(p1, p2))
+                return halfPlaneMultiplier; // 1 * halfPlaneMultiplier;
 
-            // if LiesInEarlierHalfPlane(p1, p2)
-            //     result = -1 * halfPlaneMultiplier;
-            // else if LiesInLaterHalfPlane(p1, p2)
-            //     result = 1 * halfPlaneMultiplier;
-            // else
-            // {
-            //     // points lay in the same half-plane
-            //     ...
+            // points lay in the same half-plane
+
+            int halfPlaneQuadrantMultiplier = 1;
+            if (liesInSecondBySortOrderHalfPlane(p1))
+                halfPlaneQuadrantMultiplier = -1;
 
             if (liesInEarlierQuadrant(p1, p2))
-                result = -1 * quadrantMultiplier;
+                return -quadrantMultiplier * halfPlaneQuadrantMultiplier; // -1 * quadrantMultiplier * halfPlaneQuadrantMultiplier
             else if (liesInLaterQuadrant(p1, p2))
-                result = 1 * quadrantMultiplier;
+                return quadrantMultiplier * halfPlaneQuadrantMultiplier; // 1 * quadrantMultiplier * halfPlaneQuadrantMultiplier
 
-            else
-            {
-                segment.End = p1;
-                OrientationTestResult orientation = p2.OrientationTest(segment);
-                if (orientation == OrientationTestResult.Right)
-                    result = 1;
-                else if (orientation == OrientationTestResult.Left)
-                    result = -1;
-                else
-                {
-                    double p1SqrdRadious = pole.SquaredDistanceFrom(p1);
-                    double p2SqrdRadious = pole.SquaredDistanceFrom(p2);
-                    if (p1SqrdRadious.IsAlmostEqualTo(p2SqrdRadious))
-                        return p1.ID.CompareTo(p2.ID) * idOrderMultiplier;
-                    else result = p1SqrdRadious.CompareTo(p2SqrdRadious);
-                }
-            }
-            result *= directionMultiplier;
-            return result;
+            // points lay in the same quadrant
+
+            segment.End = p1;
+            OrientationTestResult orientation = p2.OrientationTest(segment);
+            if (orientation == OrientationTestResult.Right)
+                return directionMultiplier; // 1 * directionMultiplier
+            else if (orientation == OrientationTestResult.Left)
+                return -directionMultiplier; // -1 * directionMultiplier
+
+            // points are collinear
+
+            double p1SqrdRadious = pole.SquaredDistanceFrom(p1);
+            double p2SqrdRadious = pole.SquaredDistanceFrom(p2);
+            if (p1SqrdRadious.IsAlmostEqualTo(p2SqrdRadious))
+                return p1.ID.CompareTo(p2.ID) * idOrderMultiplier;
+            else return p1SqrdRadious.CompareTo(p2SqrdRadious);
         }
     }
 }

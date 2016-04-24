@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using ComparingDoubles;
+
 namespace ComputationalGeometry2D
 {
-    class LineSegment
+    public class LineSegment
     {
         public Point Start { get; set; }
         public Point End { get; set; }

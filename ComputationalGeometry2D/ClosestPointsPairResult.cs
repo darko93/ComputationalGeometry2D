@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    class ClosestPointsPairResult
+    public class ClosestPointsPairResult
     {
         public List<UnorderedPointsPair> PointsPairs { get; internal set; } = new List<ComputationalGeometry2D.UnorderedPointsPair>();
         public double MinDist { get; internal set; }

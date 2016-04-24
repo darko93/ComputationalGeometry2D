@@ -1,4 +1,4 @@
-﻿namespace ComputationalGeometry2D
+﻿namespace PrimitiveComputationalGeometry2DVisualiser
 {
     partial class Form1
     {

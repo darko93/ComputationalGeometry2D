@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComputationalGeometry2D
+using ComparingDoubles;
+using ComputationalGeometry2D;
+
+namespace AlgorithmsTests
 {
     class HalfPlanePointsAngularIDComparer : Comparer<Point>
     {
@@ -86,30 +89,38 @@ namespace ComputationalGeometry2D
 
         public override int Compare(Point p1, Point p2)
         {
-            int result;
             if (liesInEarlierQuadrant(p1, p2))
-                result = -1 * quadrantMultiplier;
-            else if (liesInLaterQuadrant(p1, p2))
-                result = 1 * quadrantMultiplier;
-            else
-            {
-                segment.End = p1;
-                OrientationTestResult p2Orientation = p2.OrientationTest(segment);
-                if (p2Orientation == OrientationTestResult.Right)
-                    result = 1;
-                else if (p2Orientation == OrientationTestResult.Left)
-                    result = -1;
-                else
-                {
-                    double p1SqrdRadious = pole.SquaredDistanceFrom(p1);
-                    double p2SqrdRadious = pole.SquaredDistanceFrom(p2);
-                    if (p1SqrdRadious.IsAlmostEqualTo(p2SqrdRadious))
-                        return p1.ID.CompareTo(p2.ID) * idOrderMultiplier;
-                    else result = p1SqrdRadious.CompareTo(p2SqrdRadious);
-                }
-            }
-            result *= directionMultiplier;
-            return result;
+                return -quadrantMultiplier; // -1 * quadrantMultiplier
+            if (liesInLaterQuadrant(p1, p2))
+                return quadrantMultiplier; // 1 * quadrantMultiplier
+
+            // brakuje tu 
+            //int halfPlaneQuadrantMultiplier = 1;
+            //if (liesInSecondBySortOrderHalfPlane(p1))
+            //    halfPlaneQuadrantMultiplier = -1;
+
+            // quadrantMultiplier = 1 wtedy, gdy zaczynamy sortowac od positiveX/Y i jestesmy w pierwszej polowce sortowania
+            //     lub gdy zaczynamy sortowac od negativeX/Y i jestemy w drugiej polowce sortowania
+            // quadrantMultiplier = -1 wtedy, gdy zaczynamy sortowac od negativeX/Y i jestemy w pierwszej polowce sortowania
+            //     lub gdy zaczynamy od positiveX/Y i jestesmy w drugiej polowce sortowania
+            // przeslac numer polowki sortowania do konstruktora ??
+
+            // points lay in the same quadrant
+
+            segment.End = p1;
+            OrientationTestResult orientation = p2.OrientationTest(segment);
+            if (orientation == OrientationTestResult.Right)
+                return directionMultiplier; // 1 * directionMultiplier
+            if (orientation == OrientationTestResult.Left)
+                return -directionMultiplier; // -1 * directionMultiplier
+
+            // points are collinear
+
+            double p1SqrdRadious = pole.SquaredDistanceFrom(p1);
+            double p2SqrdRadious = pole.SquaredDistanceFrom(p2);
+            if (p1SqrdRadious.IsAlmostEqualTo(p2SqrdRadious))
+                return p1.ID.CompareTo(p2.ID) * idOrderMultiplier;
+            return p1SqrdRadious.CompareTo(p2SqrdRadious);
         }
     }
 }

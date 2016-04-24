@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using ComparingDoubles;
+
 namespace ComputationalGeometry2D
 {
     class PointsYXIDComparer : Comparer<Point>

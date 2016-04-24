@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    enum AngularSortStartLocation : byte
+    public enum AngularSortStartLocation : byte
     {
         PositiveX,
         PositiveY,

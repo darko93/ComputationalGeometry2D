@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ComputationalGeometry2D.Properties
+namespace PrimitiveComputationalGeometry2DVisualiser.Properties
 {
 
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComputationalGeometry2D
+namespace ComparingDoubles
 {
     sealed class DoublesComparer
     {

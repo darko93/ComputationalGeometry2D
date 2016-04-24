@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ComputationalGeometry2D.Properties
+namespace PrimitiveComputationalGeometry2DVisualiser.Properties
 {
 
 
@@ -44,7 +44,7 @@ namespace ComputationalGeometry2D.Properties
             {
                 if ((resourceMan == null))
                 {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ComputationalGeometry2D.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PrimitiveComputationalGeometry2DVisualiser.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
