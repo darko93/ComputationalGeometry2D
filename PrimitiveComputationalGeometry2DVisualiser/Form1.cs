@@ -21,16 +21,10 @@ namespace PrimitiveComputationalGeometry2DVisualiser
         List<ComputationalGeometry2D.Point> points = new List<ComputationalGeometry2D.Point>();
         System.Drawing.Point p1;
 
-        private GeometricAlgorithms geometry = null;
-        private GeometricAlgorithms Geometry
-        {
-            get
-            {
-                if (geometry == null)
-                    geometry = new GeometricAlgorithms();
-                return geometry;
-            }
-        }
+        private System.Drawing.Point center = new System.Drawing.Point(300, 300);
+
+
+        private GeometricAlgorithms geometry = new GeometricAlgorithms();
 
         private static readonly Random random = new Random();
         private static readonly object syncLock = new object();
@@ -53,8 +47,8 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             trans.Parent = bialy;
 
             //uklad wspolrzednych
-            gt.DrawLine(Pens.Black, bialy.Location.X + 300, bialy.Location.Y + 0, bialy.Location.X + 300, bialy.Location.Y + 600);
-            gt.DrawLine(Pens.Black, bialy.Location.X + 0, bialy.Location.Y + 300, bialy.Location.X + 600, bialy.Location.Y + 300);
+            gt.DrawLine(Pens.Black, bialy.Location.X + center.X, bialy.Location.Y + 0, bialy.Location.X + center.X, bialy.Location.Y + 2 * center.Y);
+            gt.DrawLine(Pens.Black, bialy.Location.X + 0, bialy.Location.Y + center.Y, bialy.Location.X + 2 * center.X, bialy.Location.Y + center.Y);
         }
 
         private void trans_MouseDown(object sender, MouseEventArgs e)
@@ -85,11 +79,11 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             {
                 gt.DrawLine(Pens.Black, p.Last(), e.Location);
 
-                ComputationalGeometry2D.Point currentPoint = new ComputationalGeometry2D.Point(e.X - 300, -e.Y + 300);
+                ComputationalGeometry2D.Point currentPoint = new ComputationalGeometry2D.Point(e.X - center.X, -e.Y + center.Y);
                 
                 if (!p.Last().Equals(e.Location)) // jeśli wykliknęliśmy w innym miejscu
                 {
-                    ComputationalGeometry2D.Point last = new ComputationalGeometry2D.Point(p.Last().X - 300, -p.Last().Y + 300);
+                    ComputationalGeometry2D.Point last = new ComputationalGeometry2D.Point(p.Last().X - center.X, -p.Last().Y + center.Y);
                     segments.Add(new LineSegment(last, currentPoint));
                     UpdateSegmentsList();
                 }
@@ -151,11 +145,11 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             //long time0 = sw.ElapsedMilliseconds;
             //sw.Restart();
 
-            ClosestPointsPairResult minDistPair1 = Geometry.ClosestPairSweepLine(points);
+            ClosestPointsPairResult minDistPair1 = geometry.ClosestPairSweepLine(points);
             long time1 = sw.ElapsedMilliseconds;
             sw.Restart();
 
-            ClosestPointsPairResult minDistPair2 = Geometry.ClosestPairRecursive(points);
+            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(points);
             long time2 = sw.ElapsedMilliseconds;
             sw.Stop();
             
@@ -164,9 +158,9 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             foreach (UnorderedPointsPair pair in minDistPair2.ClosestPairs)
             {
                 ComputationalGeometry2D.Point p1 = pair.First;
-                PointF drawableP1 = new PointF((float)p1.X + 300, (float)-p1.Y + 300);
+                PointF drawableP1 = new PointF((float)p1.X + center.X, (float)-p1.Y + center.Y);
                 ComputationalGeometry2D.Point p2 = pair.Second;
-                PointF drawableP2 = new PointF((float)p2.X + 300, (float)-p2.Y + 300);
+                PointF drawableP2 = new PointF((float)p2.X + center.X, (float)-p2.Y + center.Y);
                 gt.DrawLine(Pens.Black, drawableP1, drawableP2);
             }
             trans.Refresh();
@@ -190,14 +184,14 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
             gt.Clear(Color.White);
             //uklad wspolrzednych
-            gt.DrawLine(Pens.Black, bialy.Location.X + 300, bialy.Location.Y + 0, bialy.Location.X + 300, bialy.Location.Y + 600);
-            gt.DrawLine(Pens.Black, bialy.Location.X + 0, bialy.Location.Y + 300, bialy.Location.X + 600, bialy.Location.Y + 300);
+            gt.DrawLine(Pens.Black, bialy.Location.X + center.X, bialy.Location.Y + 0, bialy.Location.X + center.X, bialy.Location.Y +2 * center.Y);
+            gt.DrawLine(Pens.Black, bialy.Location.X + 0, bialy.Location.Y + center.X, bialy.Location.X + 2 * center.X, bialy.Location.Y + center.Y);
             trans.Refresh();
         }
 
         private void convexHullGrahamScan_btn_Click(object sender, EventArgs e)
         {
-            Stack<ComputationalGeometry2D.Point> convexHull = Geometry.ConvexHullGrahamScan(points);
+            Stack<ComputationalGeometry2D.Point> convexHull = geometry.ConvexHullGrahamScan(points);
             StringBuilder convexHullSb = new StringBuilder();
             foreach (ComputationalGeometry2D.Point p in convexHull)
                 convexHullSb.AppendLine(p.ToString());
@@ -206,11 +200,25 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
         private void convexHullJarvis_btn_Click(object sender, EventArgs e)
         {
-            Stack<ComputationalGeometry2D.Point> convexHull = Geometry.ConvexHullJarvis(points);
+            Stack<ComputationalGeometry2D.Point> convexHull = geometry.ConvexHullJarvis(points);
             StringBuilder convexHullSb = new StringBuilder();
             foreach (ComputationalGeometry2D.Point p in convexHull)
                 convexHullSb.AppendLine(p.ToString());
             MessageBox.Show(convexHullSb.ToString());
+        }
+
+        private void segmentIntersection_btn_Click(object sender, EventArgs e)
+        {
+            List<Intersection> intersections = geometry.SegmentIntersection(segments);
+            Size pointSize = new Size(6, 6);
+
+            foreach (Intersection intersection in intersections)
+            {
+                ComputationalGeometry2D.Point intersectionPoint = intersection.Point;
+                PointF drawableIntersectionPoint = new PointF((float)(intersectionPoint.X + center.X - 0.5*pointSize.Width), (float)(-intersectionPoint.Y + center.Y - 0.5*pointSize.Height));
+                gt.DrawEllipse(Pens.Red, new RectangleF(drawableIntersectionPoint, pointSize));
+            }
+            trans.Refresh();
         }
 
         private void membershipTest_btn_Click(object sender, EventArgs e)

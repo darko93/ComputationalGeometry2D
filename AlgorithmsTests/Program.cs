@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ComputationalGeometry2D;
+using ComputationalGeometry2D.SegmentIntersection;
 
 namespace AlgorithmsTests.cs
 {
@@ -12,7 +13,7 @@ namespace AlgorithmsTests.cs
     {
         static void Main(string[] args)
         {
-            ClosestPairsAlgorithms();
+            //ClosestPairsAlgorithms();
             //AllPlaneAngularSort();
             //AlgorithmsTester.Instance.AllPlaneAngularSortConcretePoints();
             //HalfPlaneAngularSort();
@@ -20,6 +21,11 @@ namespace AlgorithmsTests.cs
             //AlgorithmsTester.Instance.AllPlaneAngularSortAllCases(100000);
             //MinByAngleTest();
             //TreeSetRangeFromTo();
+            ConcreteSegmentIntersection();
+
+            new LineSegment(new Point(Double.NegativeInfinity, Double.NegativeInfinity), new Point(Double.PositiveInfinity, Double.PositiveInfinity)).TryIntersection(
+                new LineSegment(new Point(Double.NegativeInfinity, Double.PositiveInfinity), new Point(Double.PositiveInfinity, Double.NegativeInfinity)));
+
             Console.ReadKey();
         }
 
@@ -62,5 +68,16 @@ namespace AlgorithmsTests.cs
         //    AlgorithmsTester.Instance.MinByAngle(out quadrantTime, out halfPlaneTime, pointsCount);
         //    Console.WriteLine($"MinByAngle\npointsCount = {pointsCount}\nquadrantTime = {quadrantTime}\nhalf plane time = {halfPlaneTime}");
         //}
+
+        private static void ConcreteSegmentIntersection()
+        {
+            foreach (Intersection intersection in AlgorithmsTester.Instance.ConcreteSegmentIntersection())
+            {
+                Console.WriteLine($"\nIntersection point: {intersection.Point}");
+                Console.WriteLine("Intersecting segments:");
+                foreach (LineSegment segment in intersection.Segments)
+                    Console.WriteLine(segment);
+            }
+        }
     }
 }

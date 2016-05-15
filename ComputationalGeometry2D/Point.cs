@@ -60,10 +60,10 @@ namespace ComputationalGeometry2D
             X.IsAlmostEqualTo(other.X) && Y.IsAlmostEqualTo(other.Y);
 
         public override string ToString() =>
-            #if DEBUG
-            $"({X},{Y}) ID={ID}";
-            #else
+            //#if DEBUG
+            //$"({X},{Y}) ID={ID}";
+            //#else
             $"({X},{Y})";
-            #endif
+            //#endif
     }
 }

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ComparingDoubles;
+using ComputationalGeometry2D.SegmentIntersection;
+
 
 namespace ComputationalGeometry2D
 {
@@ -32,7 +34,7 @@ namespace ComputationalGeometry2D
 
         public double MaxY => Math.Max(Start.Y, End.Y);
 
-        private double Vector2ProductZValue(Point initial, Point terminal1, Point terminal2) =>
+        private static double Vector2ProductZValue(Point initial, Point terminal1, Point terminal2) =>
             (terminal1.X - initial.X) * (terminal2.Y - initial.Y) - (terminal2.X - initial.X) * (terminal1.Y - initial.Y);
 
         public double DirectionFrom(Point point) =>
@@ -50,6 +52,17 @@ namespace ComputationalGeometry2D
             RectBoundIntersectsWithRectBoundOf(other) &&
             (DirectionFrom(other.Start) * DirectionFrom(other.End)).IsLessThanOrAlmostEqualToZero() &&
             (other.DirectionFrom(Start) * other.DirectionFrom(End)).IsLessThanOrAlmostEqualToZero();
+
+        public Point TryIntersection(LineSegment other)
+        {
+            if (!this.IntersectsWith(other))
+                return null;
+
+            Line l1 = new Line(this);
+            Line l2 = new Line(other);
+
+            return l1.TryIntersection(l2);
+        }
 
         public override string ToString() => $"|{Start}{End}|";
     }
