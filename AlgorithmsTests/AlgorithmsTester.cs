@@ -187,10 +187,10 @@ namespace AlgorithmsTests
         {
             List<Point> points = GetRandomDoublePoints(pointsCount, coordBound);
             stopWatch.Start();
-            ClosestPointsPairResult sweepLineResult = Geometry.ClosestPairSweepLine(points);
+            ClosestPointsPairResult sweepLineResult = Geometry.ClosestPointsPairSweepLine(points);
             sweepLineTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Restart();
-            ClosestPointsPairResult recursiveResult = Geometry.ClosestPairDivideAndConquer(points);
+            ClosestPointsPairResult recursiveResult = Geometry.ClosestPointsPairDivideAndConquer(points);
             recursiveTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Reset();
             bool resultsAreEqual = sweepLineResult.MinDist.IsAlmostEqualTo(recursiveResult.MinDist)

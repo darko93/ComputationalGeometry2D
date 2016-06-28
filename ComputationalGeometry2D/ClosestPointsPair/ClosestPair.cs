@@ -9,13 +9,13 @@ using C5;
 using MoreLinq;
 using ComputationalGeometry2D.Common;
 
-namespace ComputationalGeometry2D.ClosestPair
+namespace ComputationalGeometry2D.ClosestPairPoints
 {
-    class ClosestPair
+    class ClosestPointsPair
     {
-        public static ClosestPair Instance { get; } = new ClosestPair();
+        public static ClosestPointsPair Instance { get; } = new ClosestPointsPair();
 
-        private ClosestPair() { }
+        private ClosestPointsPair() { }
 
         private delegate Point getNeighborPoint(Point point);
 
