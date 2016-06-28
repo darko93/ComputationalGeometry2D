@@ -140,11 +140,11 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             //long time0 = sw.ElapsedMilliseconds;
             //sw.Restart();
 
-            ClosestPointsPairResult minDistPair1 = Geometry.ClosestPointsPairSweepLine(points);
+            ClosestPointsPairResult minDistPair1 = Geometry.ClosestPairSweepLine(points);
             long time1 = sw.ElapsedMilliseconds;
             sw.Restart();
 
-            ClosestPointsPairResult minDistPair2 = Geometry.ClosestPointsPairDivideAndConquer(points);
+            ClosestPointsPairResult minDistPair2 = Geometry.ClosestPairDivideAndConquer(points);
             long time2 = sw.ElapsedMilliseconds;
             sw.Stop();
             
