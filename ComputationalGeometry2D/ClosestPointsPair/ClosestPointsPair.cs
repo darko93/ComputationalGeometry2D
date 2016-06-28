@@ -9,7 +9,7 @@ using C5;
 using MoreLinq;
 using ComputationalGeometry2D.Common;
 
-namespace ComputationalGeometry2D.ClosestPair
+namespace ComputationalGeometry2D.ClosestPairPoints
 {
     class ClosestPair
     {

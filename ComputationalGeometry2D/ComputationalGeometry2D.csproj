@@ -41,7 +41,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClosestPair\ClosestPair.cs" />
+    <Compile Include="ClosestPointsPair\ClosestPointsPair.cs" />
     <Compile Include="ConvexHull\ConvexHull.cs" />
     <Compile Include="AngularOrder.cs" />
     <Compile Include="AngularSortStartLocation.cs" />
