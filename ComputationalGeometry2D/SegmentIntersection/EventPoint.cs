@@ -11,10 +11,10 @@ namespace ComputationalGeometry2D.SegmentIntersection
     class EventPoint
     {
         public Point PointValue;
-
-        public List<LineSegmentNode> UpperFor { get; set; } = new List<LineSegmentNode>();
-        public List<LineSegmentNode> IntersectionFor { get; set; } = new List<LineSegmentNode>();
-        public List<LineSegmentNode> LowerFor { get; set; } = new List<LineSegmentNode>();
+   
+        public List<LineSegmentNode> UpperFor { get; } = new List<LineSegmentNode>();
+        public List<LineSegmentNode> IntersectionFor { get; } = new List<LineSegmentNode>();
+        public List<LineSegmentNode> LowerFor { get; } = new List<LineSegmentNode>();
 
         public EventPoint(Point pointValue)
         {

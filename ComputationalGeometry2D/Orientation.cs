@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    public enum OrientationTestResult : byte
+    public enum Orientation : byte
     {
         Collinear,
         Left,

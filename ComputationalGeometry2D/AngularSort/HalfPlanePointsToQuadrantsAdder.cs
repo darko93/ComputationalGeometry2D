@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 using ComparingDoubles;
 
-namespace ComputationalGeometry2D
+namespace ComputationalGeometry2D.AngularSort
 {
-    internal class HalfPlanePointsToQuadrantsAdder
+    class HalfPlanePointsToQuadrantsAdder
     {
         protected Point pole = null;
 
@@ -18,13 +18,13 @@ namespace ComputationalGeometry2D
         public List<Point> FirstBySortOrderQuadrant { get; private set; } = new List<Point>();
         public List<Point> SecondBySortOrderQuadrant { get; private set; } = new List<Point>();
 
-        public HalfPlanePointsToQuadrantsAdder(Point pole, AngularSortDirection sortDirection, AngularSortStartLocation sortStartLocation)
+        public HalfPlanePointsToQuadrantsAdder(Point pole, AngularOrder sortAngularOrder, AngularSortStartLocation sortStartLocation)
         {
             this.pole = pole;
-            InitializePointAdder(sortDirection, sortStartLocation);
+            InitializePointAdder(sortAngularOrder, sortStartLocation);
         }
 
-        protected virtual void InitializePointAdder(AngularSortDirection sortDirection, AngularSortStartLocation sortStartLocation)
+        protected virtual void InitializePointAdder(AngularOrder sortAngularOrder, AngularSortStartLocation sortStartLocation)
         {
             if (sortStartLocation == AngularSortStartLocation.PositiveX)
                 AddPointToProperQuadrant = AddPointToProperFirstSortedHalfPlaneQuadrantWhenSortStartsFromPositiveX;

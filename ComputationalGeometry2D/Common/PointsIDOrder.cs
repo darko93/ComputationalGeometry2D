@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComputationalGeometry2D
+namespace ComputationalGeometry2D.Common
 {
-    public enum AngularSortDirection : byte
+    enum PointsIDOrder
     {
-        CounterClockwise,
-        Clockwise
+        Ascending,
+        Descending
     }
 }

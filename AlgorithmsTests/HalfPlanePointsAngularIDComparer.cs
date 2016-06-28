@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using ComparingDoubles;
 using ComputationalGeometry2D;
+using ComputationalGeometry2D.Common;
 
 namespace AlgorithmsTests
 {
@@ -25,11 +26,11 @@ namespace AlgorithmsTests
         private comparePoints liesInEarlierQuadrant = null;
         private comparePoints liesInLaterQuadrant = null;
 
-        public HalfPlanePointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularSortDirection direction, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
+        public HalfPlanePointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularOrder angularOrder, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
         {
             SetPole(pole);
             SetSortStartLocation(startLocation);
-            SetSortDirection(direction);
+            SetSortDirection(angularOrder);
             SetIDOrder(pointsIDOrder);
         }
 
@@ -58,9 +59,9 @@ namespace AlgorithmsTests
             }
         }
 
-        public void SetSortDirection(AngularSortDirection direction)
+        public void SetSortDirection(AngularOrder angularOrder)
         {
-            if (direction == AngularSortDirection.CounterClockwise)
+            if (angularOrder == AngularOrder.CounterClockwise)
                 directionMultiplier = 1;
             else // if (direction == AngularSortDirection.Clockwise)
                 directionMultiplier = -1;
@@ -108,10 +109,10 @@ namespace AlgorithmsTests
             // points lay in the same quadrant
 
             segment.End = p1;
-            OrientationTestResult orientation = p2.OrientationTest(segment);
-            if (orientation == OrientationTestResult.Right)
+            Orientation orientation = p2.OrientationTest(segment);
+            if (orientation == Orientation.Right)
                 return directionMultiplier; // 1 * directionMultiplier
-            if (orientation == OrientationTestResult.Left)
+            if (orientation == Orientation.Left)
                 return -directionMultiplier; // -1 * directionMultiplier
 
             // points are collinear

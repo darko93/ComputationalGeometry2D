@@ -11,13 +11,13 @@ namespace AlgorithmsTests
 {
     class TestonlyAlgorithms
     {
-        public List<Point> HalfPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation) =>
-            points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, direction)).ToList();
+        public List<Point> HalfPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation) =>
+            points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, angularOrder)).ToList();
 
-        public List<Point> AllPlaneAngularSortAllPlaneComparer(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation) =>
-            points.OrderBy(p => p, new PointsAngularIDComparer(pole, startLocation, direction)).ToList();
+        public List<Point> AllPlaneAngularSortAllPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation) =>
+            points.OrderBy(p => p, new PointsAngularIDComparer(pole, startLocation, angularOrder)).ToList();
 
-        public List<Point> AllPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation)
+        public List<Point> AllPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation)
         {
             List<Point> halfPlane1Points, halfPlane2Points;
 
@@ -42,8 +42,8 @@ namespace AlgorithmsTests
                 halfPlane1Points = points.Where(p => p.X.IsGreaterThanOrAlmostEqualTo(pole.X)).ToList();
                 halfPlane2Points = points.Where(p => p.X.IsLessThanAndNotAlmostEqualTo(pole.X)).ToList();
             }
-            halfPlane1Points = halfPlane1Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, direction)).ToList();
-            halfPlane2Points = halfPlane2Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, secondHalfPlaneStartLocation, direction)).ToList();
+            halfPlane1Points = halfPlane1Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, angularOrder)).ToList();
+            halfPlane2Points = halfPlane2Points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, secondHalfPlaneStartLocation, angularOrder)).ToList();
             halfPlane1Points.AddRange(halfPlane2Points); // kolejnosc laczenia trzebaby sprawdzac, bo dolna polowa moze byc pierwsza...
             return halfPlane1Points;
         }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 using ComparingDoubles;
 
-namespace ComputationalGeometry2D
+namespace ComputationalGeometry2D.Common
 {
-    internal class PointsYXIDComparer : Comparer<Point>
+    class PointsYXIDComparer : Comparer<Point>
     {
         private int idOrderMultiplier = 1;
 

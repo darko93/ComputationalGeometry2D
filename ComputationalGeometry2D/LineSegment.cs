@@ -15,7 +15,7 @@ namespace ComputationalGeometry2D
         public Point Start { get; set; }
         public Point End { get; set; }
 
-        public LineSegment() { }
+        internal LineSegment() { }
 
         public LineSegment(Point start, Point end)
         {
@@ -34,7 +34,24 @@ namespace ComputationalGeometry2D
 
         public double MaxY => Math.Max(Start.Y, End.Y);
 
-        private static double Vector2ProductZValue(Point initial, Point terminal1, Point terminal2) =>
+        public double DeltaX => End.X - Start.X;
+
+        public double DeltaY => End.Y - Start.Y;
+
+        public bool IsHorizontal() =>
+            DeltaY.IsAlmostEqualToZero();
+
+        public bool IsVertical() =>
+            DeltaX.IsAlmostEqualToZero();
+
+        public void SwapEnds()
+        {
+            Point temp = Start;
+            Start = End;
+            End = temp;
+        }
+
+        public static double Vector2ProductZValue(Point initial, Point terminal1, Point terminal2) =>
             (terminal1.X - initial.X) * (terminal2.Y - initial.Y) - (terminal2.X - initial.X) * (terminal1.Y - initial.Y);
 
         public double DirectionFrom(Point point) =>
@@ -63,6 +80,42 @@ namespace ComputationalGeometry2D
 
             return l1.TryIntersection(l2);
         }
+
+        public bool IntersectsWith(Line line) =>
+            (line.SubstituteIntoEquation(Start) * line.SubstituteIntoEquation(End)).IsLessThanOrAlmostEqualToZero();
+
+        private static double Length(double deltaX, double deltaY) =>
+            Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        public double Length() =>
+            Length(DeltaX, DeltaY);
+
+        private static double ScalarProduct(double deltaX1, double deltaY1, double deltaX2, double deltaY2) =>
+            deltaX1 * deltaX2 + deltaY1 * deltaY2;
+
+        public double ScalarProduct(LineSegment other) =>
+            ScalarProduct(DeltaX, DeltaY, other.DeltaX, other.DeltaY);
+
+        public double AngleRadians(LineSegment other)
+        {
+            double deltaX = DeltaX;
+            double deltaY = DeltaY;
+
+            double otherDeltaX = other.DeltaX;
+            double otherDeltaY = other.DeltaY;
+
+            double scalarProduct = ScalarProduct(deltaX, deltaY, otherDeltaX, otherDeltaY);
+
+            double length = Length(deltaX, deltaY);
+            double otherLength = Length(otherDeltaX, otherDeltaY);
+
+            double angleCosine = scalarProduct / (length * otherLength);
+
+            return Math.Acos(angleCosine);
+        }
+
+        public bool CoordinatesEqual(LineSegment other) =>
+            Start.CoordinatesEqual(other.Start) && End.CoordinatesEqual(other.End);
 
         public override string ToString() => $"|{Start}{End}|";
     }

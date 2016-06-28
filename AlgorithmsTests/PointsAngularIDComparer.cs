@@ -1,9 +1,11 @@
-﻿using System;using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using ComputationalGeometry2D;
+using ComputationalGeometry2D.Common;
 using ComparingDoubles;
 
 namespace AlgorithmsTests
@@ -15,7 +17,7 @@ namespace AlgorithmsTests
         private Point pole = null;
         private LineSegment segment = new LineSegment();
 
-        private int directionMultiplier = 1;
+        private int angularOrderMultiplier = 1;
         private int quadrantMultiplier = 1; 
         private int halfPlaneMultiplier = 1;
         private int idOrderMultiplier = 1;
@@ -30,11 +32,11 @@ namespace AlgorithmsTests
         private delegate bool processPoint(Point point);
         private processPoint liesInSecondBySortOrderHalfPlane = null;
 
-        public PointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularSortDirection direction, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
+        public PointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularOrder angularOrder, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
         {
             SetPole(pole);
-            SetQuadrantMultiplier(startLocation); // base
-            SetDirectionMultiplier(direction); // base
+            SetQuadrantMultiplier(startLocation); 
+            SetAngularOrderMultiplier(angularOrder); 
             SetHalfPlaneMultiplier();
             SetQuadrantAndHalfPlaneDelegates(startLocation);
 
@@ -77,16 +79,6 @@ namespace AlgorithmsTests
             }
         }
 
-        //private override void SetHorizontalMethods()
-        //{
-        //    base.SetHorizontalMethods();
-        //    liesInEarlierHalfPlane = LiesInEarlierHorizontalHalfPlane;
-        //    liesInLaterHalfPlane = LiesInLaterHorizontalHalfPlane;
-        //    if (halfPlaneMultiplier > 0)
-        //        liesInSecondBySortOrderHalfPlane = LiesInDownHalfPlane;
-        //    else liesInSecondBySortOrderHalfPlane = LiesInUpperHalfPlane;
-        //}
-
         private void SetQuadrantMultiplier(AngularSortStartLocation startLocation)
         {
             if (startLocation == AngularSortStartLocation.PositiveX || startLocation == AngularSortStartLocation.PositiveY)
@@ -95,33 +87,19 @@ namespace AlgorithmsTests
                 quadrantMultiplier = -1;
         }
 
-        private void SetDirectionMultiplier(AngularSortDirection direction)
+        private void SetAngularOrderMultiplier(AngularOrder angularOrder)
         {
-            if (direction == AngularSortDirection.CounterClockwise)
-                directionMultiplier = 1;
+            if (angularOrder == AngularOrder.CounterClockwise)
+                angularOrderMultiplier = 1;
             else // if (direction == AngularSortDirection.Clockwise)
-                directionMultiplier = -1;
+                angularOrderMultiplier = -1;
         }
 
         private void SetHalfPlaneMultiplier()
         {
             // Sort starts from earlier (upper or left) halfplane ?
-            halfPlaneMultiplier = quadrantMultiplier == directionMultiplier ? 1 : -1;
+            halfPlaneMultiplier = quadrantMultiplier == angularOrderMultiplier ? 1 : -1;
         }
-
-        //public /*override*/ void SetSortDirection(AngularSortDirection direction)
-        //{
-        //    SetDirectionMultiplier(direction); // base.SetSortDirection(direction);
-        //    SetHalfPlaneMultiplier();
-        //    // tu by jeszcze nalezalo ustawic liesInSecondBySortOrderHalfPlane, bo jest zalezny od halfPlaneMultiplier (i sortDirection :P)
-        //}
-
-        //public /*override*/ void SetSortStartLocation(AngularSortStartLocation startLocation)
-        //{
-        //    SetQuadrantMultiplier(startLocation);
-        //    SetHalfPlaneMultiplier();
-        //    SetQuadrantAndHalfPlaneDelegates(startLocation); // base.SetSortStartLocation(startLocation);
-        //}
 
         public void SetIDOrder(PointsIDOrder pointsIDOrder)
         {
@@ -147,7 +125,6 @@ namespace AlgorithmsTests
 
         private bool LiesInEarlierHorizontalHalfPlane(Point p1, Point p2) =>
             p1.Y.IsGreaterThanAndNotAlmostEqualTo(pole.Y) && p2.Y.IsLessThanAndNotAlmostEqualTo(pole.Y);
-        //                    OrAlmostEqualTo
 
         private bool LiesInLaterHorizontalHalfPlane(Point p1, Point p2) =>
             p1.Y.IsLessThanAndNotAlmostEqualTo(pole.Y) && p2.Y.IsGreaterThanAndNotAlmostEqualTo(pole.Y);
@@ -191,11 +168,11 @@ namespace AlgorithmsTests
             // points lay in the same quadrant
 
             segment.End = p1;
-            OrientationTestResult orientation = p2.OrientationTest(segment);
-            if (orientation == OrientationTestResult.Right)
-                return directionMultiplier; // 1 * directionMultiplier
-            else if (orientation == OrientationTestResult.Left)
-                return -directionMultiplier; // -1 * directionMultiplier
+            Orientation orientation = p2.OrientationTest(segment);
+            if (orientation == Orientation.Right)
+                return angularOrderMultiplier; // 1 * directionMultiplier
+            else if (orientation == Orientation.Left)
+                return -angularOrderMultiplier; // -1 * directionMultiplier
 
             // points are collinear
 

@@ -13,10 +13,9 @@ namespace AlgorithmsTests
 {
     class AlgorithmsTester
     {
-        private static AlgorithmsTester instance = new AlgorithmsTester();
-        public static AlgorithmsTester Instance => instance;
-
-        private GeometricAlgorithms geometry = new GeometricAlgorithms();
+        public static AlgorithmsTester Instance { get; } = new AlgorithmsTester();
+        private AlgorithmsTester() { }
+        
         private TestonlyAlgorithms testGeometry = new TestonlyAlgorithms();
         private Stopwatch stopWatch = new Stopwatch();
 
@@ -67,8 +66,8 @@ namespace AlgorithmsTests
                 new Point(1, 5)
 
             };
-            List<Point> pointsHalfPlaneComparer = testGeometry.HalfPlaneAngularSortHalfPlaneComparer(points, pole, AngularSortDirection.CounterClockwise, AngularSortStartLocation.NegativeY);
-            List<Point> pointsQuadrantComparer = geometry.HalfPlaneAngularSort(points, pole, AngularSortDirection.CounterClockwise, AngularSortStartLocation.NegativeY);
+            List<Point> pointsHalfPlaneComparer = testGeometry.HalfPlaneAngularSortHalfPlaneComparer(points, pole, AngularOrder.CounterClockwise, AngularSortStartLocation.NegativeY);
+            List<Point> pointsQuadrantComparer = Geometry.HalfPlaneAngularSort(points, pole, AngularOrder.CounterClockwise, AngularSortStartLocation.NegativeY);
             bool resultsAreEqual = CheckPointsListsEquality(pointsHalfPlaneComparer, pointsQuadrantComparer);
             return resultsAreEqual;
         }
@@ -92,11 +91,11 @@ namespace AlgorithmsTests
                 new Point(1, 5)
 
             };
-            AngularSortDirection direction = AngularSortDirection.Clockwise;
+            AngularOrder angularOrder = AngularOrder.Clockwise;
             AngularSortStartLocation startLocation = AngularSortStartLocation.PositiveY;
-            List<Point> pointsHalfPlaneComparer = testGeometry.AllPlaneAngularSortHalfPlaneComparer(points, pole, direction, startLocation);
-            List<Point> pointsAllPlaneComparer = testGeometry.AllPlaneAngularSortAllPlaneComparer(points, pole, direction, startLocation);
-            List<Point> pointsQuadrantComparer = geometry.AllPlaneAngularSort(points, pole, direction, startLocation);
+            List<Point> pointsHalfPlaneComparer = testGeometry.AllPlaneAngularSortHalfPlaneComparer(points, pole, angularOrder, startLocation);
+            List<Point> pointsAllPlaneComparer = testGeometry.AllPlaneAngularSortAllPlaneComparer(points, pole, angularOrder, startLocation);
+            List<Point> pointsQuadrantComparer = Geometry.AllPlaneAngularSort(points, pole, angularOrder, startLocation);
 
             bool resultsAreEqual = CheckPointsListsEquality(pointsHalfPlaneComparer, pointsAllPlaneComparer);
             if (!resultsAreEqual)
@@ -109,16 +108,16 @@ namespace AlgorithmsTests
         {
             List<Point> points = GetRandomDoublePoints(pointsCount, 1000);
             Point pole = new Point(0.0, 0.0);
-            AngularSortDirection direction = AngularSortDirection.Clockwise;
+            AngularOrder angularOrder = AngularOrder.Clockwise;
             AngularSortStartLocation startLocation = AngularSortStartLocation.PositiveX;
             stopWatch.Start();
-            List<Point> pointsHalfPlaneComparer = testGeometry.AllPlaneAngularSortHalfPlaneComparer(points, pole, direction, startLocation);
+            List<Point> pointsHalfPlaneComparer = testGeometry.AllPlaneAngularSortHalfPlaneComparer(points, pole, angularOrder, startLocation);
             halfPlaneTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Restart();
-            List<Point> pointsAllPlaneComparer = testGeometry.AllPlaneAngularSortAllPlaneComparer(points, pole, direction, startLocation);
+            List<Point> pointsAllPlaneComparer = testGeometry.AllPlaneAngularSortAllPlaneComparer(points, pole, angularOrder, startLocation);
             allPlaneTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Restart();
-            List<Point> pointsQuadrantComparer = geometry.AllPlaneAngularSort(points, pole, direction, startLocation);
+            List<Point> pointsQuadrantComparer = Geometry.AllPlaneAngularSort(points, pole, angularOrder, startLocation);
             quadrantTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Stop();
             bool resultsAreEqual = CheckPointsListsEquality(pointsAllPlaneComparer, pointsQuadrantComparer);
@@ -136,10 +135,10 @@ namespace AlgorithmsTests
             return true;
         }
 
-        private bool AngularSortOneCase(List<Point> points, Point pole, AngularSortDirection direction, AngularSortStartLocation startLocation)
+        private bool AngularSortOneCase(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation)
         {
-            List<Point> pointsAllPlaneComperer = testGeometry.AllPlaneAngularSortAllPlaneComparer(points, pole, direction, startLocation);
-            List<Point> pointsQuadrantComparer = geometry.AllPlaneAngularSort(points, pole, direction, startLocation);
+            List<Point> pointsAllPlaneComperer = testGeometry.AllPlaneAngularSortAllPlaneComparer(points, pole, angularOrder, startLocation);
+            List<Point> pointsQuadrantComparer = Geometry.AllPlaneAngularSort(points, pole, angularOrder, startLocation);
             return CheckPointsListsEquality(pointsAllPlaneComperer, pointsQuadrantComparer);
         }
 
@@ -147,21 +146,21 @@ namespace AlgorithmsTests
         {
             List<Point> points = GetRandomDoublePoints(pointsCount, pointsCount);
             Point pole = points[points.Count / 2];
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.CounterClockwise, AngularSortStartLocation.PositiveX))
+            if (!AngularSortOneCase(points, pole, AngularOrder.CounterClockwise, AngularSortStartLocation.PositiveX))
                 return false;
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.CounterClockwise, AngularSortStartLocation.PositiveY))
+            if (!AngularSortOneCase(points, pole, AngularOrder.CounterClockwise, AngularSortStartLocation.PositiveY))
                 return false;
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.CounterClockwise, AngularSortStartLocation.NegativeX))
+            if (!AngularSortOneCase(points, pole, AngularOrder.CounterClockwise, AngularSortStartLocation.NegativeX))
                 return false;
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.CounterClockwise, AngularSortStartLocation.NegativeY))
+            if (!AngularSortOneCase(points, pole, AngularOrder.CounterClockwise, AngularSortStartLocation.NegativeY))
                 return false;
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.Clockwise, AngularSortStartLocation.PositiveX))
+            if (!AngularSortOneCase(points, pole, AngularOrder.Clockwise, AngularSortStartLocation.PositiveX))
                 return false;
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.Clockwise, AngularSortStartLocation.PositiveY))
+            if (!AngularSortOneCase(points, pole, AngularOrder.Clockwise, AngularSortStartLocation.PositiveY))
                 return false;
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.Clockwise, AngularSortStartLocation.NegativeX))
+            if (!AngularSortOneCase(points, pole, AngularOrder.Clockwise, AngularSortStartLocation.NegativeX))
                 return false;
-            if (!AngularSortOneCase(points, pole, AngularSortDirection.Clockwise, AngularSortStartLocation.NegativeY))
+            if (!AngularSortOneCase(points, pole, AngularOrder.Clockwise, AngularSortStartLocation.NegativeY))
                 return false;
             return true;
         }
@@ -169,15 +168,15 @@ namespace AlgorithmsTests
         public bool HalfPlaneAngularSort(out long halfComparerTime, out long quadrantComparerTime, int pointsCount = 10000000)
         {
             List<Point> points = GetRandomDoublePoints(pointsCount, pointsCount);
-            AngularSortDirection direction = AngularSortDirection.CounterClockwise;
+            AngularOrder angularOrder = AngularOrder.CounterClockwise;
             AngularSortStartLocation startLocation = AngularSortStartLocation.PositiveX;
             Point pole = new Point(0.0, 0.0);
             points.Add(pole);
             stopWatch.Start();
-            List<Point> pointsHalfPlaneComparer = testGeometry.HalfPlaneAngularSortHalfPlaneComparer(points, pole, direction, startLocation);
+            List<Point> pointsHalfPlaneComparer = testGeometry.HalfPlaneAngularSortHalfPlaneComparer(points, pole, angularOrder, startLocation);
             halfComparerTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Restart();
-            List<Point> pointsQuadrant = geometry.HalfPlaneAngularSort(points, pole, direction, startLocation);
+            List<Point> pointsQuadrant = Geometry.HalfPlaneAngularSort(points, pole, angularOrder, startLocation);
             quadrantComparerTime = stopWatch.ElapsedMilliseconds;
             bool resultsAreEqual = CheckPointsListsEquality(pointsHalfPlaneComparer, pointsQuadrant);
             return resultsAreEqual;
@@ -188,10 +187,10 @@ namespace AlgorithmsTests
         {
             List<Point> points = GetRandomDoublePoints(pointsCount, coordBound);
             stopWatch.Start();
-            ClosestPointsPairResult sweepLineResult = geometry.ClosestPairSweepLine(points);
+            ClosestPointsPairResult sweepLineResult = Geometry.ClosestPairSweepLine(points);
             sweepLineTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Restart();
-            ClosestPointsPairResult recursiveResult = geometry.ClosestPairRecursive(points);
+            ClosestPointsPairResult recursiveResult = Geometry.ClosestPairDivideAndConquer(points);
             recursiveTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Reset();
             bool resultsAreEqual = sweepLineResult.MinDist.IsAlmostEqualTo(recursiveResult.MinDist)
@@ -203,10 +202,10 @@ namespace AlgorithmsTests
         {
             List<Point> points = GetRandomDoublePoints(pointsCount, coordBound);
             stopWatch.Start();
-            List<Point> convexHullGrahamScan = geometry.ConvexHullGrahamScan(points).ToList();
+            List<Point> convexHullGrahamScan = Geometry.ConvexHullGrahamScan(points).ToList();
             grahamScanTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Restart();
-            List<Point> convexHullJarvis = geometry.ConvexHullJarvis(points).ToList();
+            List<Point> convexHullJarvis = Geometry.ConvexHullJarvis(points).ToList();
             jarvisTime = stopWatch.ElapsedMilliseconds;
             stopWatch.Reset();
             int resultLength = convexHullGrahamScan.Count;
@@ -240,7 +239,7 @@ namespace AlgorithmsTests
                 //new LineSegment(new Point(2, 2), new Point(4, 0))
             };
 
-            List<Intersection> result = geometry.SegmentIntersection(segments);
+            List<Intersection> result = Geometry.SegmentIntersectionSweepLine(segments);
             return result;            
         }
     }

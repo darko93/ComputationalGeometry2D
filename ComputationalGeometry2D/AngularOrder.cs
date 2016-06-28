@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ComputationalGeometry2D
 {
-    internal enum PointsIDOrder
+    public enum AngularOrder : byte
     {
-        Ascending,
-        Descending
+        CounterClockwise,
+        Clockwise
     }
 }

@@ -6,40 +6,40 @@ using System.Threading.Tasks;
 
 using ComparingDoubles;
 
-namespace ComputationalGeometry2D
+namespace ComputationalGeometry2D.AngularSort
 {
-    internal sealed class PointsToQuadrantsAdder : HalfPlanePointsToQuadrantsAdder
+    sealed class PointsToQuadrantsAdder : HalfPlanePointsToQuadrantsAdder
     {
         public List<Point> ThirdBySortOrderQuadrant { get; private set; } = new List<Point>();
         public List<Point> FourthBySortOrderQuadrant { get; private set; } = new List<Point>();
 
-        public PointsToQuadrantsAdder(Point pole, AngularSortDirection sortDirection, AngularSortStartLocation sortStartLocation)
-            : base(pole, sortDirection, sortStartLocation)
+        public PointsToQuadrantsAdder(Point pole, AngularOrder sortAngularOrder, AngularSortStartLocation sortStartLocation)
+            : base(pole, sortAngularOrder, sortStartLocation)
         { }
 
-        protected override void InitializePointAdder(AngularSortDirection sortDirection, AngularSortStartLocation sortStartLocation)
+        protected override void InitializePointAdder(AngularOrder sortAngularOrder, AngularSortStartLocation sortStartLocation)
         {
             if (sortStartLocation == AngularSortStartLocation.PositiveX)
             {
-                if (sortDirection == AngularSortDirection.CounterClockwise)
+                if (sortAngularOrder == AngularOrder.CounterClockwise)
                     AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsHorizontalAndStartsFromFirstQuadrant;
                 else AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsHorizontalAndStartsFromFourthQuadrant;
             }
             else if (sortStartLocation == AngularSortStartLocation.NegativeX)
             {
-                if (sortDirection == AngularSortDirection.Clockwise)
+                if (sortAngularOrder == AngularOrder.Clockwise)
                     AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsHorizontalAndStartsFromSecondQuadrant;
                 else AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsHorizontalAndStartsFromThirdQuadrant;
             }
             else if (sortStartLocation == AngularSortStartLocation.PositiveY)
             {
-                if (sortDirection == AngularSortDirection.CounterClockwise)
+                if (sortAngularOrder == AngularOrder.CounterClockwise)
                     AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsVerticalAndStartsFromSecondQuadrant;
                 else AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsVerticalAndStartsFromFirstQuadrant;
             }
             else // if (sortStartLocation == AngularSortStartLocation.NegativeY)
             {
-                if (sortDirection == AngularSortDirection.Clockwise)
+                if (sortAngularOrder == AngularOrder.Clockwise)
                     AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsVerticalAndStartsFromThirdQuadrant;
                 else AddPointToProperQuadrant = AddPointToProperQuadrantsWhenSortIsVerticalAndStartsFromFourthQuadrant;
             }

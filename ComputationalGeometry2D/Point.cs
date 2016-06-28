@@ -38,16 +38,16 @@ namespace ComputationalGeometry2D
         public double DistanceFrom(Point other) =>
             Math.Sqrt(SquaredDistanceFrom(other));
 
-        public OrientationTestResult OrientationTest(LineSegment segment)
+        public Orientation OrientationTest(LineSegment segment)
         {
             double direction = segment.DirectionFrom(this);
             if (direction.IsAlmostEqualToZero())
             {
-                if (segment.RectBoundContains(this)) return OrientationTestResult.On;
-                return OrientationTestResult.Collinear;
+                if (segment.RectBoundContains(this)) return Orientation.On;
+                return Orientation.Collinear;
             }
-            if (direction > 0.0) return OrientationTestResult.Left;
-            return OrientationTestResult.Right;
+            if (direction > 0.0) return Orientation.Left;
+            return Orientation.Right;
         }
 
         public void Translate(double x, double y)

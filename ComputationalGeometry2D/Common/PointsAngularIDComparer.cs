@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 using ComparingDoubles;
 
-namespace ComputationalGeometry2D
+namespace ComputationalGeometry2D.Common
 {
-    internal class PointsAngularByOrientationIDComparer : Comparer<Point>
+    class PointsAngularIDComparer : Comparer<Point>
     {
         private Point pole = null;
         private LineSegment segment = new LineSegment();
@@ -16,10 +16,10 @@ namespace ComputationalGeometry2D
         private int idOrderMultiplier = 1;
         private int directionMultiplier = 1;
 
-        public PointsAngularByOrientationIDComparer(Point pole, AngularSortDirection direction, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
+        public PointsAngularIDComparer(Point pole, AngularOrder angularOrder, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
         {
             SetPole(pole);
-            SetSortDirection(direction);
+            SetSortDirection(angularOrder);
             SetIDOrder(pointsIDOrder);
         }
 
@@ -30,9 +30,9 @@ namespace ComputationalGeometry2D
         }
 
 
-        public void SetSortDirection(AngularSortDirection direction)
+        public void SetSortDirection(AngularOrder angularOrder)
         {
-            if (direction == AngularSortDirection.CounterClockwise)
+            if (angularOrder == AngularOrder.CounterClockwise)
                 directionMultiplier = 1;
             else // if (direction == AngularSortDirection.Clockwise)
                 directionMultiplier = -1;
@@ -49,10 +49,10 @@ namespace ComputationalGeometry2D
         public override int Compare(Point p1, Point p2)
         {
             segment.End = p1;
-            OrientationTestResult orientation = p2.OrientationTest(segment);
-            if (orientation == OrientationTestResult.Right)
+            Orientation orientation = p2.OrientationTest(segment);
+            if (orientation == Orientation.Right)
                 return directionMultiplier; // 1 * directionMultiplier
-            if (orientation == OrientationTestResult.Left)
+            if (orientation == Orientation.Left)
                 return -directionMultiplier; // -1 * directionMultiplier
 
             // points are collinear

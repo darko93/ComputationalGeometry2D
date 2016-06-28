@@ -13,7 +13,7 @@ namespace AlgorithmsTests.cs
     {
         static void Main(string[] args)
         {
-            //ClosestPairsAlgorithms();
+            ClosestPairsAlgorithms();
             //AllPlaneAngularSort();
             //AlgorithmsTester.Instance.AllPlaneAngularSortConcretePoints();
             //HalfPlaneAngularSort();
@@ -21,10 +21,7 @@ namespace AlgorithmsTests.cs
             //AlgorithmsTester.Instance.AllPlaneAngularSortAllCases(100000);
             //MinByAngleTest();
             //TreeSetRangeFromTo();
-            ConcreteSegmentIntersection();
-
-            new LineSegment(new Point(Double.NegativeInfinity, Double.NegativeInfinity), new Point(Double.PositiveInfinity, Double.PositiveInfinity)).TryIntersection(
-                new LineSegment(new Point(Double.NegativeInfinity, Double.PositiveInfinity), new Point(Double.PositiveInfinity, Double.NegativeInfinity)));
+            //ConcreteSegmentIntersection();
 
             Console.ReadKey();
         }

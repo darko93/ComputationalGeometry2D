@@ -23,9 +23,6 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
         private System.Drawing.Point center = new System.Drawing.Point(300, 300);
 
-
-        private GeometricAlgorithms geometry = new GeometricAlgorithms();
-
         private static readonly Random random = new Random();
         private static readonly object syncLock = new object();
         private static int RandomNumber(int min, int max)
@@ -57,8 +54,6 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             {
                 p.Add(e.Location);
                 p1 = e.Location;
-                
-                //p1 = new System.Drawing.Point(e.X - 300, -e.Y + 300); //zmiana współrzędnych
             }
         }
 
@@ -118,7 +113,7 @@ namespace PrimitiveComputationalGeometry2DVisualiser
         {
             LineSegment testSegment = segments[segments_lb.SelectedIndex];
             ComputationalGeometry2D.Point testPoint = points[points_lb.SelectedIndex];
-            OrientationTestResult result = testPoint.OrientationTest(testSegment);
+            ComputationalGeometry2D.Orientation result = testPoint.OrientationTest(testSegment);
             MessageBox.Show(result.ToString());
         }
 
@@ -145,17 +140,17 @@ namespace PrimitiveComputationalGeometry2DVisualiser
             //long time0 = sw.ElapsedMilliseconds;
             //sw.Restart();
 
-            ClosestPointsPairResult minDistPair1 = geometry.ClosestPairSweepLine(points);
+            ClosestPointsPairResult minDistPair1 = Geometry.ClosestPairSweepLine(points);
             long time1 = sw.ElapsedMilliseconds;
             sw.Restart();
 
-            ClosestPointsPairResult minDistPair2 = geometry.ClosestPairRecursive(points);
+            ClosestPointsPairResult minDistPair2 = Geometry.ClosestPairDivideAndConquer(points);
             long time2 = sw.ElapsedMilliseconds;
             sw.Stop();
             
             MessageBox.Show($"{time1}\n{minDistPair1.MinDist}\n{time2}\n{minDistPair2.MinDist}");
 
-            foreach (UnorderedPointsPair pair in minDistPair2.ClosestPairs)
+            foreach (UnorderedPointsPair pair in minDistPair1.ClosestPairs)
             {
                 ComputationalGeometry2D.Point p1 = pair.First;
                 PointF drawableP1 = new PointF((float)p1.X + center.X, (float)-p1.Y + center.Y);
@@ -191,7 +186,7 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
         private void convexHullGrahamScan_btn_Click(object sender, EventArgs e)
         {
-            Stack<ComputationalGeometry2D.Point> convexHull = geometry.ConvexHullGrahamScan(points);
+            Stack<ComputationalGeometry2D.Point> convexHull = Geometry.ConvexHullGrahamScan(points);
             StringBuilder convexHullSb = new StringBuilder();
             foreach (ComputationalGeometry2D.Point p in convexHull)
                 convexHullSb.AppendLine(p.ToString());
@@ -200,7 +195,7 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
         private void convexHullJarvis_btn_Click(object sender, EventArgs e)
         {
-            Stack<ComputationalGeometry2D.Point> convexHull = geometry.ConvexHullJarvis(points);
+            Stack<ComputationalGeometry2D.Point> convexHull = Geometry.ConvexHullJarvis(points);
             StringBuilder convexHullSb = new StringBuilder();
             foreach (ComputationalGeometry2D.Point p in convexHull)
                 convexHullSb.AppendLine(p.ToString());
@@ -209,7 +204,7 @@ namespace PrimitiveComputationalGeometry2DVisualiser
 
         private void segmentIntersection_btn_Click(object sender, EventArgs e)
         {
-            List<Intersection> intersections = geometry.SegmentIntersection(segments);
+            List<Intersection> intersections = Geometry.SegmentIntersectionSweepLine(segments);
             Size pointSize = new Size(6, 6);
 
             foreach (Intersection intersection in intersections)
@@ -219,6 +214,14 @@ namespace PrimitiveComputationalGeometry2DVisualiser
                 gt.DrawEllipse(Pens.Red, new RectangleF(drawableIntersectionPoint, pointSize));
             }
             trans.Refresh();
+        }
+
+        private void pointInPolygon_btn_Click(object sender, EventArgs e)
+        {
+            ComputationalGeometry2D.Point testedPoint = points.Last();
+            List<ComputationalGeometry2D.Point> vertices = points.Where(p => !p.Equals(testedPoint)).ToList();
+            Polygon polygon = new Polygon(vertices);
+            MessageBox.Show(polygon.Contains(testedPoint).ToString());
         }
 
         private void membershipTest_btn_Click(object sender, EventArgs e)
