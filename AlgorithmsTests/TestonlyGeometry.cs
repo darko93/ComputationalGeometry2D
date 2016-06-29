@@ -6,15 +6,15 @@ using ComparingDoubles;
 
 namespace AlgorithmsTests
 {
-    class TestonlyAlgorithms
+    static class TestonlyGeometry
     {
-        public List<Point> HalfPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation) =>
+        public static List<Point> HalfPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation) =>
             points.OrderBy(p => p, new HalfPlanePointsAngularIDComparer(pole, startLocation, angularOrder)).ToList();
 
-        public List<Point> AllPlaneAngularSortAllPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation) =>
-            points.OrderBy(p => p, new PointsAngularIDComparer(pole, startLocation, angularOrder)).ToList();
+        public static List<Point> AllPlaneAngularSortAllPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation) =>
+            points.OrderBy(p => p, new AllPlanePointsAngularIDComparer(pole, startLocation, angularOrder)).ToList();
 
-        public List<Point> AllPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation)
+        public static List<Point> AllPlaneAngularSortHalfPlaneComparer(List<Point> points, Point pole, AngularOrder angularOrder, AngularSortStartLocation startLocation)
         {
             List<Point> halfPlane1Points, halfPlane2Points;
 
@@ -45,7 +45,7 @@ namespace AlgorithmsTests
             return halfPlane1Points;
         }
 
-        //public void MinByAngleTest(List<Point> points, AngularSortDirection direction, AngularSortStartLocation startLocation, out long quadrantTime, out long halfPlaneTime)
+        //public static void MinByAngleTest(List<Point> points, AngularSortDirection direction, AngularSortStartLocation startLocation, out long quadrantTime, out long halfPlaneTime)
         //{
         //    System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
         //    Point pole = points[points.Count / 2];

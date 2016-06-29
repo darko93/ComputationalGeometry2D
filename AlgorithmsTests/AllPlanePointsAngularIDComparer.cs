@@ -6,7 +6,7 @@ using ComparingDoubles;
 
 namespace AlgorithmsTests
 {
-    class PointsAngularIDComparer : Comparer<Point>
+    class AllPlanePointsAngularIDComparer : Comparer<Point>
     {
         // By default sorting starts from positive X or positive Y axis in countercloskwise direction.
 
@@ -28,7 +28,7 @@ namespace AlgorithmsTests
         private delegate bool processPoint(Point point);
         private processPoint liesInSecondBySortOrderHalfPlane = null;
 
-        public PointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularOrder angularOrder, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
+        public AllPlanePointsAngularIDComparer(Point pole, AngularSortStartLocation startLocation, AngularOrder angularOrder, PointsIDOrder pointsIDOrder = PointsIDOrder.Ascending)
         {
             SetPole(pole);
             SetQuadrantMultiplier(startLocation); 
