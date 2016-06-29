@@ -44,11 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlgorithmsTester.cs" />
-    <Compile Include="HalfPlanePointsAngularIDComparer.cs" />
-    <Compile Include="AllPlanePointsAngularIDComparer.cs" />
+    <Compile Include="Testonly\HalfPlanePointsAngularIDComparer.cs" />
+    <Compile Include="Testonly\AllPlanePointsAngularIDComparer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestonlyGeometry.cs" />
+    <Compile Include="Testonly\TestonlyGeometry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

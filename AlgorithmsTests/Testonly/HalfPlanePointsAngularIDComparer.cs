@@ -4,7 +4,7 @@ using ComparingDoubles;
 using ComputationalGeometry2D;
 using ComputationalGeometry2D.Common;
 
-namespace AlgorithmsTests
+namespace AlgorithmsTests.Testonly
 {
     class HalfPlanePointsAngularIDComparer : Comparer<Point>
     {

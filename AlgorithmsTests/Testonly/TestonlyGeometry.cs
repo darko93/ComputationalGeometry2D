@@ -4,7 +4,7 @@ using System.Linq;
 using ComputationalGeometry2D;
 using ComparingDoubles;
 
-namespace AlgorithmsTests
+namespace AlgorithmsTests.Testonly
 {
     static class TestonlyGeometry
     {
