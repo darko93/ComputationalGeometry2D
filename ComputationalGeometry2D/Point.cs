@@ -19,10 +19,10 @@ namespace ComputationalGeometry2D
             ID = id++;
         }
 
-        public bool LiesToTheLeftOf(LineSegment segment) =>
+        public bool LiesLeftOf(LineSegment segment) =>
             segment.DirectionFrom(this).IsGreaterThanAndNotAlmostEqualToZero();
 
-        public bool LiesToTheRightOf(LineSegment segment) =>
+        public bool LiesRightOf(LineSegment segment) =>
             segment.DirectionFrom(this).IsLessThanAndNotAlmostEqualToZero();
 
         public bool LiesOn(LineSegment segment) =>

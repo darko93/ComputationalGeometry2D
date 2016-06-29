@@ -37,7 +37,7 @@ namespace ComputationalGeometry2D.ConvexHull
                     nextToTheTop = stack.Peek();
                     segment.Start = top;
                 }
-                while (nextToTheTop.LiesToTheRightOf(segment));
+                while (nextToTheTop.LiesRightOf(segment));
                 stack.Push(top); // Top was redundantly popped.
                 stack.Push(iPoint);
             }
