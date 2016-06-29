@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using ComputationalGeometry2D;
-using ComputationalGeometry2D.SegmentIntersection;
 
-namespace AlgorithmsTests.cs
+namespace AlgorithmsTests
 {
     class Program
     {
         static void Main(string[] args)
         {
-            ClosestPairsAlgorithms();
+            //ClosestPairsAlgorithms();
             //AllPlaneAngularSort();
             //AlgorithmsTester.Instance.AllPlaneAngularSortConcretePoints();
             //HalfPlaneAngularSort();
@@ -21,7 +16,7 @@ namespace AlgorithmsTests.cs
             //AlgorithmsTester.Instance.AllPlaneAngularSortAllCases(100000);
             //MinByAngleTest();
             //TreeSetRangeFromTo();
-            //ConcreteSegmentIntersection();
+            ConcreteSegmentIntersection();
 
             Console.ReadKey();
         }

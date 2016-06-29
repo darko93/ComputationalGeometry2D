@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 using ComparingDoubles;
-
 using ComputationalGeometry2D;
 
 namespace AlgorithmsTests
@@ -219,24 +216,31 @@ namespace AlgorithmsTests
         {
             List<LineSegment> segments = new List<LineSegment>()
             {
-                new LineSegment(new Point(0.0, 0.0), new Point(5.0, 5.0)),
-                //new LineSegment(new Point(0.0, 0.0), new Point(5.0, 5.0)), // duplicate
-                new LineSegment(new Point(1.0, 4.0), new Point(4.0, 1.0)),
-                new LineSegment(new Point(0.0, 3.0), new Point(5.0, 3.0)),
-                new LineSegment(new Point(4.0, 5.0), new Point(5.0, 4.0)),
-                new LineSegment(new Point(3.0, 5.0), new Point(6.0, 4.0)),
-                new LineSegment(new Point(0.0, 2.5), new Point(5.0, 2.5)),
-                new LineSegment(new Point(2.5, 3.0), new Point(2.5, 2.0)),
-                new LineSegment(new Point(1.0, 3.0), new Point(2.5, 2.5)),
-                new LineSegment(new Point(2.5, 2.5), new Point(4.0, 2.0)),
+                //new LineSegment(new Point(0.0, 0.0), new Point(5.0, 5.0)),
+                ////new LineSegment(new Point(0.0, 0.0), new Point(5.0, 5.0)), // duplicate
+                //new LineSegment(new Point(1.0, 4.0), new Point(4.0, 1.0)),
+                //new LineSegment(new Point(0.0, 3.0), new Point(5.0, 3.0)),
+                //new LineSegment(new Point(4.0, 5.0), new Point(5.0, 4.0)),
+                //new LineSegment(new Point(3.0, 5.0), new Point(6.0, 4.0)),
+                //new LineSegment(new Point(0.0, 2.5), new Point(5.0, 2.5)),
+                //new LineSegment(new Point(2.5, 3.0), new Point(2.5, 2.0)),
+                //new LineSegment(new Point(1.0, 3.0), new Point(2.5, 2.5)),
+                //new LineSegment(new Point(2.5, 2.5), new Point(4.0, 2.0)),
 
-                ////new LineSegment(new Point(2, 4), new Point(5, 1)),
-                ////new LineSegment(new Point(2, 2), new Point(5, 2)),
-                ////new LineSegment(new Point(5, 2), new Point(4, 3)),
+                //////new LineSegment(new Point(2, 4), new Point(5, 1)),
+                //////new LineSegment(new Point(2, 2), new Point(5, 2)),
+                //////new LineSegment(new Point(5, 2), new Point(4, 3)),
                 
-                //new LineSegment(new Point(0, 1), new Point(1, 0)),
-                //new LineSegment(new Point(0, 1), new Point(5, 1)),
-                //new LineSegment(new Point(2, 2), new Point(4, 0))
+                ////new LineSegment(new Point(0, 1), new Point(1, 0)),
+                ////new LineSegment(new Point(0, 1), new Point(5, 1)),
+                ////new LineSegment(new Point(2, 2), new Point(4, 0))
+
+                new LineSegment(new Point(0, 0), new Point(5, 5)),
+                new LineSegment(new Point(0, 5), new Point(5, 0)),
+                new LineSegment(new Point(2.5, 2.5), new Point(2.5, 2.0)),
+
+                new LineSegment(new Point(0, 10), new Point(2, 12)),
+                new LineSegment(new Point(0, 12), new Point(2, 10)),
             };
 
             List<Intersection> result = Geometry.SegmentIntersectionSweepLine(segments);

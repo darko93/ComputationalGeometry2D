@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using ComparingDoubles;
 
@@ -23,7 +19,7 @@ namespace ComputationalGeometry2D.SegmentIntersection
                 double segment2MinX = segment2.MinX;
 
                 if (segment1MinX.IsAlmostEqualTo(segment2MinX))
-                    return 0;
+                    return segment1.DeltaY.CompareTo(segment2.DeltaY);
                 else return segment1MinX.CompareTo(segment2MinX);
             }
         }

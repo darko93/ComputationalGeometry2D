@@ -62,7 +62,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SegmentIntersection\EventPoint.cs" />
     <Compile Include="SegmentIntersection\EventPointComparer.cs" />
-    <Compile Include="SegmentIntersection\EventPointEqualityComparer.cs" />
     <Compile Include="SegmentIntersection\SegmentIntersection.cs" />
     <Compile Include="SegmentIntersection\SegmentsBySweepLineIntersectionComparer.cs" />
     <Compile Include="SegmentIntersection\LineSegmentNode.cs" />

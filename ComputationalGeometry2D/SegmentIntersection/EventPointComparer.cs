@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using ComparingDoubles;
 
@@ -23,14 +19,6 @@ namespace ComputationalGeometry2D.SegmentIntersection
                     return 0;
                 else return p1.X.CompareTo(p2.X);
             }
-
-            //if (p1.Y.IsAlmostEqualTo(p2.Y))
-            //{
-            //    if (p1.X.IsAlmostEqualTo(p2.X))
-            //        return 0;
-            //    else return p1.X.CompareTo(p2.X);
-            //}
-            //else return p1.Y.CompareTo(p2.Y) * -1;
         }
     }
 }

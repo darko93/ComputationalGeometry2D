@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-using ComparingDoubles;
-using C5;
-using MoreLinq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("AlgorithmsTests")]
